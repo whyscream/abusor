@@ -13,8 +13,9 @@ class Case(models.Model):
     def __str__(self):
         """Default string representation."""
         if self.subject:
-            return self.ip_address + ": " + self.subject
-        return self.ip_address + ": " + self.start_date.isoformat()
+            return self.subject + " (" + self.ip_address + ")"
+        return self.start_date.isoformat() + " (" + self.ip_address + ")"
+
 
 class Event(models.Model):
     """An abuse related event."""
@@ -39,6 +40,4 @@ class Event(models.Model):
 
     def __str__(self):
         """Default string representation."""
-        if self.subject:
-            return self.ip_address + ": " + self.subject
-        return self.ip_address + ": " + self.date.isoformat()
+        return self.subject + " (" + self.ip_address + ")"
