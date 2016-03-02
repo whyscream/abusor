@@ -1,0 +1,6 @@
+# python artifacts
+__pycache__
+*.pyc
+
+# test database
+*.sqlite3
