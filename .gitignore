@@ -2,6 +2,9 @@
 __pycache__
 *.pyc
 
+# virtualenv
+env/
+
 # test database
 *.sqlite3
 
