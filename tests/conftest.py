@@ -1,13 +1,16 @@
 from random import randrange
 
 import pytest
-
 from pytest_django.lazy_django import skip_if_no_django
 
 
 @pytest.fixture
 def apiclient():
-    """Retern an API client instance."""
+    """
+    Return an API client instance.
+
+    Based on the 'client' fixture in pytest-django.
+    """
     skip_if_no_django()
 
     from rest_framework.test import APIClient  # noqa
