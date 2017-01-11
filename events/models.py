@@ -1,11 +1,12 @@
-from datetime import datetime
-
 from django.db import models
+from django.utils import timezone
+
 
 class Case(models.Model):
     """A collection of related abuse related events."""
+
     ip_address = models.GenericIPAddressField()
-    start_date = models.DateTimeField(default=datetime.now)
+    start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(blank=True)
     subject = models.CharField(max_length=128, blank=True)
     description = models.TextField(blank=True)
@@ -19,6 +20,7 @@ class Case(models.Model):
 
 class Event(models.Model):
     """An abuse related event."""
+
     LOGIN = 'login'
     MALWARE = 'malware'
     SPAM = 'spam'
@@ -34,8 +36,8 @@ class Event(models.Model):
     description = models.TextField(blank=True)
     score = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, blank=True)
-    case = models.ForeignKey('Case', models.SET_NULL, blank=True, null=True)
-    report_date = models.DateTimeField(default=datetime.now)
+    case = models.ForeignKey('Case', models.SET_NULL, blank=True, null=True, related_name='events')
+    report_date = models.DateTimeField(default=timezone.now)
     external_reference = models.CharField(max_length=128, blank=True)
 
     def __str__(self):
