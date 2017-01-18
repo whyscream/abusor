@@ -14,14 +14,17 @@ import requests
 def parse_arguments():
     """Setup and handle command line arguments."""
     parser = argparse.ArgumentParser(description="Abusor API client")
-    parser.add_argument('--ip', '-i', type=str, metavar='x.x.x.x',
+    parser.add_argument('--ip', '-i', type=str, metavar='x.x.x.x', required=True,
                         help="The IP address to report")
-    parser.add_argument('--subject', '-s', type=str,
+    parser.add_argument('--subject', '-s', type=str, required=True,
                         help='The event subject')
+    parser.add_argument('--token', '-t', type=str,
+                        help="The API authorization token")
     parser.add_argument('--uri', '-u', type=str, metavar='https://example.com',
                         help='The root URI of the abusor API',
-                        default='http://admin:admin@localhost:8000')
-    return parser.parse_args()
+                        default='http://localhost:8000')
+    args = parser.parse_args()
+    return args
 
 
 def timezone_aware_datetime():
@@ -41,15 +44,18 @@ def timezone_aware_datetime():
     return datetime.now(UTC())
 
 
-def post_to_api(uri, ip_address, subject):
+def post_to_api(uri, token, ip_address, subject):
     """Send a new event to the API."""
     endpoint = uri.rstrip('/') + '/event/'
+    headers = {
+        'Authorization': 'Token {}'.format(token),
+    }
     payload = {
         'ip_address': ip_address,
         'subject': subject,
         'date': str(timezone_aware_datetime()),
     }
-    resp = requests.post(endpoint, json=payload)
+    resp = requests.post(endpoint, headers=headers, json=payload)
     if resp.status_code == 201:
         return
     else:
@@ -60,7 +66,7 @@ def post_to_api(uri, ip_address, subject):
 def main():
     """Main routine for the client."""
     args = parse_arguments()
-    post_to_api(args.uri, args.ip, args.subject)
+    post_to_api(args.uri, args.token, args.ip, args.subject)
 
 if __name__ == "__main__":
     main()
