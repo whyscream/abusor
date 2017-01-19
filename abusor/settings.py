@@ -13,3 +13,9 @@ REST_FRAMEWORK = {
     ],
     'PAGE_SIZE': 10,
 }
+
+try:
+    # load custom settings when available
+    from abusor.custom_settings import *  # noqa
+except ImportError:
+    pass
