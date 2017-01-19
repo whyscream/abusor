@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Abusor API client.
 
@@ -5,6 +6,7 @@ This file contains a simple client that is able to send new abuse events
 to abusor using POST requests to the REST interface.
 """
 import argparse
+import os
 import sys
 from datetime import datetime, timedelta, tzinfo
 
@@ -13,6 +15,8 @@ import requests
 
 def parse_arguments():
     """Setup and handle command line arguments."""
+    default_uri = 'http://localhost:8000'
+
     parser = argparse.ArgumentParser(description="Abusor API client")
     parser.add_argument('--ip', '-i', type=str, metavar='x.x.x.x', required=True,
                         help="The IP address to report")
@@ -22,8 +26,12 @@ def parse_arguments():
                         help="The API authorization token")
     parser.add_argument('--uri', '-u', type=str, metavar='https://example.com',
                         help='The root URI of the abusor API',
-                        default='http://localhost:8000')
+                        default=default_uri)
     args = parser.parse_args()
+
+    # extract args from environment
+    if args.uri == default_uri:
+        args.uri = os.environ.get('ABUSOR_URI', default_uri)
     return args
 
 
