@@ -6,8 +6,8 @@ from events.views import CaseViewSet, EventViewSet
 
 
 router = routers.DefaultRouter()
-router.register(r'case', CaseViewSet)
-router.register(r'event', EventViewSet)
+router.register(r'api/case', CaseViewSet)
+router.register(r'api/event', EventViewSet)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
