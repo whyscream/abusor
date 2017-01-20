@@ -7,7 +7,7 @@ class Case(models.Model):
 
     ip_address = models.GenericIPAddressField()
     start_date = models.DateTimeField(default=timezone.now)
-    end_date = models.DateTimeField(blank=True)
+    end_date = models.DateTimeField(null=True)
     subject = models.CharField(max_length=128, blank=True)
     description = models.TextField(blank=True)
 
