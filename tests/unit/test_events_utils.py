@@ -14,22 +14,25 @@ YESTERDAY = NOW - timedelta(days=1)
 LAST_WEEK = NOW - timedelta(days=7)
 
 
-def test_find_related_case(event, case_factory):
+def test_find_related_case(event_factory, case_factory):
     """Verify that we can find a related case for an event when the ip matches."""
+    event = event_factory.build()  # use build strategy: no save()
     case = case_factory(ip_address=event.ip_address)
     result = find_related_case(event)
     assert result == case
 
 
-def test_find_related_case_none(event, case_factory, random_ipv6):
+def test_find_related_case_none(event_factory, case_factory, random_ipv6):
     """Verify that finding a related Case will not work when the ip address differs."""
+    event = event_factory.build()  # use build strategy: no save()
     case_factory(ip_address=random_ipv6)
     result = find_related_case(event)
     assert result is None
 
 
-def test_find_related_case_newest(event, case_factory):
+def test_find_related_case_newest(event_factory, case_factory):
     """Verify that we always find the newest Case when multiple results are available."""
+    event = event_factory.build()  # use build strategy: no save()
     newest_case = case_factory(ip_address=event.ip_address, start_date=NOW)
     case_factory(ip_address=event.ip_address, start_date=YESTERDAY)
 
@@ -37,8 +40,9 @@ def test_find_related_case_newest(event, case_factory):
     assert result == newest_case
 
 
-def test_find_related_case_opened(event, case_factory):
+def test_find_related_case_opened(event_factory, case_factory):
     """Verify that when both open and closed Cases apply to an Event, the opened one is found."""
+    event = event_factory.build()  # use build strategy: no save()
     open_case = case_factory(ip_address=event.ip_address, end_date=None)
     case_factory(ip_address=event.ip_address, end_date=YESTERDAY)
 
@@ -46,8 +50,9 @@ def test_find_related_case_opened(event, case_factory):
     assert result == open_case
 
 
-def test_find_related_case_newest_closed(event, case_factory):
+def test_find_related_case_newest_closed(event_factory, case_factory):
     """Verify that we find the last closed Case when only closed cases apply to an Event."""
+    event = event_factory.build()  # use build strategy: no save()
     last_closed = case_factory(ip_address=event.ip_address, end_date=YESTERDAY)
     case_factory(ip_address=event.ip_address, end_date=LAST_WEEK)
 
