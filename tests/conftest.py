@@ -2,6 +2,13 @@ from random import randrange
 
 import pytest
 from pytest_django.lazy_django import skip_if_no_django
+from pytest_factoryboy import register
+
+from . import factories
+
+
+# register factories as fixtures
+register(factories.EventFactory)
 
 
 @pytest.fixture

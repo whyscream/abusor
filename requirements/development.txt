@@ -1,4 +1,7 @@
 -r base.txt
+
+factory_boy
 pytest-django
+pytest-factoryboy
 ipdb
 ipython
