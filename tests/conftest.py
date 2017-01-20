@@ -8,6 +8,7 @@ from . import factories
 
 
 # register factories as fixtures
+register(factories.CaseFactory)
 register(factories.EventFactory)
 
 
