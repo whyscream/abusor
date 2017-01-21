@@ -4,6 +4,7 @@ __pycache__
 
 # virtualenv
 env/
+requirements/*.done
 
 # deployment files
 static/
