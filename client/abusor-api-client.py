@@ -32,6 +32,8 @@ def parse_arguments():
     # extract args from environment
     if args.uri == default_uri:
         args.uri = os.environ.get('ABUSOR_URI', default_uri)
+    if not args.token:
+        args.token = os.environ.get('ABUSOR_TOKEN')
 
     if args.subject:
         args.subject = args.subject.replace('__', ' ')
