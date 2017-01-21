@@ -14,31 +14,35 @@ YESTERDAY = NOW - timedelta(days=1)
 LAST_WEEK = NOW - timedelta(days=7)
 
 
-def test_case_str_formatting(random_ipv4, random_ipv6):
+def test_case_str_formatting(fake):
     """Verify default formatting of a Case when cast to string."""
-    case = Case(ip_address=random_ipv4)
+    ipv4 = fake.ipv4()
+    case = Case(ip_address=ipv4)
     result = str(case)
-    assert random_ipv4 in result
+    assert ipv4 in result
     assert timezone.now().strftime("%Y-%m-%d") in result
 
-    case.ip_address = random_ipv6
+    ipv6 = fake.ipv6()
+    case.ip_address = ipv6
     result = str(case)
-    assert random_ipv6 in result
+    assert ipv6 in result
 
     case.subject = 'foo bar'
     result = str(case)
-    assert "foo bar (" + random_ipv6 + ")" == result
+    assert "foo bar (" + ipv6 + ")" == result
 
 
-def test_event_str_formatting(random_ipv4, random_ipv6):
+def test_event_str_formatting(fake):
     """Verify default formatting of an Event when cast to string."""
-    event = Event(ip_address=random_ipv4, subject='foo')
+    ipv4 = fake.ipv4()
+    event = Event(ip_address=ipv4, subject='foo')
     result = str(event)
-    assert "foo (" + random_ipv4 + ")" == result
+    assert "foo (" + ipv4 + ")" == result
 
-    event.ip_address = random_ipv6
+    ipv6 = fake.ipv6()
+    event.ip_address = ipv6
     result = str(event)
-    assert "foo (" + random_ipv6 + ")" == result
+    assert "foo (" + ipv6 + ")" == result
 
 
 def test_event_find_related_case(event, case_factory):
@@ -48,9 +52,9 @@ def test_event_find_related_case(event, case_factory):
     assert result == case
 
 
-def test_event_find_related_case_none(event, case_factory, random_ipv6):
+def test_event_find_related_case_none(event, case_factory, fake):
     """Verify that finding a related Case will not work when the ip address differs."""
-    case_factory(ip_address=random_ipv6)
+    case_factory(ip_address=fake.ipv4())
     result = event.find_related_case()
     assert result is None
 
