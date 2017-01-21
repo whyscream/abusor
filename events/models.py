@@ -13,9 +13,8 @@ class Case(models.Model):
 
     def __str__(self):
         """Default string representation."""
-        if self.subject:
-            return self.subject + " (" + self.ip_address + ")"
-        return self.start_date.isoformat() + " (" + self.ip_address + ")"
+        detail = self.subject if self.subject else self.start_date.isoformat()
+        return "{} ({})".format(detail, self.ip_address)
 
 
 class Event(models.Model):
@@ -42,7 +41,7 @@ class Event(models.Model):
 
     def __str__(self):
         """Default string representation."""
-        return self.subject + " (" + self.ip_address + ")"
+        return "{} ({})".format(self.subject, self.ip_address)
 
     def find_related_case(self):
         """Find a case related to this event."""
