@@ -1,5 +1,8 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
+
+from .rules import apply_effect, check_requirement
 
 
 class Case(models.Model):
@@ -67,3 +70,8 @@ class Event(models.Model):
                 case = Case.objects.create(**create_data)
             self.case = case
             self.save()
+
+        for rule in settings.ABUSOR_EVENT_RULES:
+            result = check_requirement(self, rule['when'])
+            if result:
+                apply_effect(self, rule['then'])

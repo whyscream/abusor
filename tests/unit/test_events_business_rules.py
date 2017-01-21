@@ -22,3 +22,16 @@ def test_new_event_finds_existing_case(case, event_factory):
     event.apply_business_rules()
     assert event.case == case
     assert Case.objects.last() == case, "A new case was created when it was not expected"
+
+
+def test_rule_event_gets_score_assigned(event, settings, fake):
+    """Verify that an event that matches the criteria gets a score assigned."""
+    word = fake.word()
+    score = fake.pyint()
+    settings.ABUSOR_EVENT_RULES = [{
+        'when': ['subject', 'contains', word],
+        'then': ['score', 'set', score]
+    }]
+    event.subject = 'foo {} bar'.format(word)
+    event.apply_business_rules()
+    assert event.score == score

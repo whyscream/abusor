@@ -1,6 +1,7 @@
 from random import randrange
 
 import pytest
+from faker import Faker
 from pytest_django.lazy_django import skip_if_no_django
 from pytest_factoryboy import register
 
@@ -49,3 +50,9 @@ def random_ipv6():
         hex(randrange(0, 65535))[2:],
     ]
     return ":".join(octets) + "::"
+
+
+@pytest.fixture
+def fake():
+    """Retrun an instance of the Faker library."""
+    return Faker()
