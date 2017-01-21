@@ -13,11 +13,39 @@ class Case(models.Model):
     end_date = models.DateTimeField(null=True)
     subject = models.CharField(max_length=128, blank=True)
     description = models.TextField(blank=True)
+    score = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
 
     def __str__(self):
         """Default string representation."""
         detail = self.subject if self.subject else self.start_date.isoformat()
         return "{} ({})".format(detail, self.ip_address)
+
+    def recalculate_score(self):
+        """Recalculate Case score from actual Event scores."""
+        if self.end_date:
+            return
+
+        scores = []
+        for event in self.events.all():
+            scores.append(event.actual_score)
+
+        self.score = round(sum(scores), 2)
+        return self.score
+
+    def close(self, *args):
+        """Close the case."""
+        self.recalculate_score()
+        self.end_date = timezone.now()
+
+    def apply_business_rules(self):
+        """Apply business rules on the case."""
+        self.recalculate_score()
+
+        for rule in settings.ABUSOR_CASE_RULES:
+            result = check_requirement(self, rule['when'])
+            if result:
+                apply_effect(self, rule['then'])
+        self.save()
 
 
 class Event(models.Model):
@@ -41,6 +69,13 @@ class Event(models.Model):
     case = models.ForeignKey('Case', models.SET_NULL, blank=True, null=True, related_name='events')
     report_date = models.DateTimeField(default=timezone.now)
     external_reference = models.CharField(max_length=128, blank=True)
+
+    @property
+    def actual_score(self):
+        """Calculate the current score based on the original score and the age."""
+        diff = timezone.now() - self.report_date
+        score = float(self.score) * settings.ABUSOR_SCORE_DECAY**diff.days
+        return round(score, 2)
 
     def __str__(self):
         """Default string representation."""
@@ -69,9 +104,9 @@ class Event(models.Model):
                 }
                 case = Case.objects.create(**create_data)
             self.case = case
-            self.save()
 
         for rule in settings.ABUSOR_EVENT_RULES:
             result = check_requirement(self, rule['when'])
             if result:
                 apply_effect(self, rule['then'])
+        self.save()

@@ -1,3 +1,5 @@
+from random import randint
+
 import pytest
 
 from events.models import Case
@@ -27,11 +29,25 @@ def test_new_event_finds_existing_case(case, event_factory):
 def test_rule_event_gets_score_assigned(event, settings, fake):
     """Verify that an event that matches the criteria gets a score assigned."""
     word = fake.word()
-    score = fake.pyint()
+    score = randint(1, 999)
     settings.ABUSOR_EVENT_RULES = [{
         'when': ['subject', 'contains', word],
-        'then': ['score', 'set', score]
+        'then': ['set', 'score', score]
     }]
     event.subject = 'foo {} bar'.format(word)
     event.apply_business_rules()
     assert event.score == score
+
+
+def test_rule_score_decay_closes_case(settings, case):
+    """Verify that when a Case score drop below a threshold, the case is closed."""
+    settings.ABUSOR_CASE_RULES = [{
+        'when': ['score', 'below', 3],
+        'then': ['call', 'close', None]
+    }]
+    event = case.events.first()
+    event.score = 2
+    event.save()
+
+    case.apply_business_rules()
+    assert case.end_date is not None

@@ -9,7 +9,7 @@ def check_requirement(obj, when):
 
 def apply_effect(obj, effect):
     """Dissect the effect of a rule, then apply it to an object."""
-    (attr, operation, value) = effect
+    (operation, attr, value) = effect
 
     apply = APPLY_MAP[operation]
     return apply(obj, attr, value)
@@ -17,10 +17,12 @@ def apply_effect(obj, effect):
 
 # A list of rule requirement operations
 REQUIREMENT_MAP = {
+    'below': lambda subject, value: float(subject) < float(value),
     'contains': lambda subject, search: search.lower() in subject.lower(),
 }
 
 # A list of rule effect appliers
 APPLY_MAP = {
+    'call': lambda obj, attr, value: getattr(obj, attr)(value),
     'set': lambda obj, attr, value: setattr(obj, attr, value),
 }
