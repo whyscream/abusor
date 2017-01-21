@@ -54,3 +54,17 @@ class Event(models.Model):
         case = Case.objects.filter(ip_address=self.ip_address, end_date__isnull=False).order_by('end_date').last()
         if case:
             return case
+
+    def apply_business_rules(self):
+        """Find applicable business rules and apply them to the Event."""
+        if not self.case:
+            case = self.find_related_case()
+            if not case:
+                create_data = {
+                    'ip_address': self.ip_address,
+                    'subject': self.subject,
+                    'start_date': self.report_date,
+                }
+                case = Case.objects.create(**create_data)
+            self.case = case
+            self.save()

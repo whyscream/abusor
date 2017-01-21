@@ -1,28 +1,24 @@
 import pytest
 
-from django.utils import timezone
-
-from events.models import Case, Event
+from events.models import Case
 
 
 pytestmark = pytest.mark.django_db
 
 
-NOW = timezone.now()
-
-
-@pytest.mark.xfail
-def test_create_event_creates_case(random_ipv4):
-    """Verify that a new Event also creates a new Case."""
-    event = Event.objects.create(ip_address=random_ipv4, date=NOW, subject='foo')
+def test_new_event_creates_case(event):
+    """Verify that a new Event creates a new Case."""
+    assert event.case is None
+    event.apply_business_rules()
     assert event.case is not None
-    assert event.case.ip_address == random_ipv4
-    assert event.case.subject == 'foo'
+    assert event.case.ip_address == event.ip_address
+    assert event.case.subject == event.subject
 
 
-@pytest.mark.xfail
-def test_create_event_finds_existing_case(case):
+def test_new_event_finds_existing_case(case, event_factory):
     """Cerify that an open Case is connected to a new event when applicable."""
-    event = Event.objects.create(ip_address=case.ip_address, date=NOW, subject='foo')
+    event = event_factory(ip_address=case.ip_address)
+    assert event.case is None
+    event.apply_business_rules()
     assert event.case == case
     assert Case.objects.last() == case, "A new case was created when it was not expected"
