@@ -15,4 +15,6 @@ class Command(BaseCommand):
 
         for event in events:
             event.apply_business_rules()
+            if event.case:
+                event.case.apply_business_rules()
         self.stdout.write(self.style.SUCCESS('Processed {} new events.'.format(events.count())))
