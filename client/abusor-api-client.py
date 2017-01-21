@@ -57,10 +57,10 @@ def timezone_aware_datetime():
 
 def post_to_api(uri, token, ip_address, subject):
     """Send a new event to the API."""
-    endpoint = uri.rstrip('/') + '/api/pevent/'
-    headers = {
-        'Authorization': 'Token {}'.format(token),
-    }
+    endpoint = uri.rstrip('/') + '/api/event/'
+    headers = {}
+    if token:
+        headers['Authorization'] = 'Token {}'.format(token)
     payload = {
         'ip_address': ip_address,
         'subject': subject,
