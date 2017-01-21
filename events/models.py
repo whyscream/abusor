@@ -1,8 +1,6 @@
 from django.db import models
 from django.utils import timezone
 
-from .utils import find_related_case
-
 
 class Case(models.Model):
     """A collection of related abuse related events."""
@@ -46,10 +44,13 @@ class Event(models.Model):
         """Default string representation."""
         return self.subject + " (" + self.ip_address + ")"
 
-    def save(self, *args, **kwargs):
-        """Find a related case or open a new one when saving an event."""
-        case = find_related_case(self)
-        if not case:
-            case = Case.objects.create(ip_address=self.ip_address, subject=self.subject)
-        self.case = case
-        super().save(*args, **kwargs)
+    def find_related_case(self):
+        """Find a case related to this event."""
+        case = Case.objects.filter(ip_address=self.ip_address, end_date=None).order_by('start_date').last()
+        if case:
+            return case
+
+        # no open case found, try closed ones
+        case = Case.objects.filter(ip_address=self.ip_address, end_date__isnull=False).order_by('end_date').last()
+        if case:
+            return case
