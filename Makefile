@@ -9,7 +9,7 @@ runserver: requirements/base.txt.done
 
 .PHONY: test
 test: requirements/development.txt.done
-	$(PYENV)/bin/py.test
+	$(PYENV)/bin/pytest
 
 
 requirements/development.txt.done: env
