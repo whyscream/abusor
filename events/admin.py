@@ -4,9 +4,11 @@ from .models import Event, Case
 
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('ip_address', 'subject', 'date', 'score', 'has_case')
+    list_display = ('ip_address', 'subject', 'date', 'score', 'actual_score', 'has_case')
     list_display_links = ('ip_address', 'subject')
+
     readonly_fields = ('report_date',)
+    save_on_top = True
 
     def has_case(self, obj):
         """Whether a case is attached or not."""
@@ -33,6 +35,7 @@ class CaseAdmin(admin.ModelAdmin):
 
     readonly_fields = ('start_date', 'end_date')
     inlines = (EventInline,)
+    save_on_top = True
 
     def number_of_events(self, obj):
         """The number of events for the case."""
