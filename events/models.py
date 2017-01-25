@@ -31,6 +31,25 @@ class Case(models.Model):
         network_string = '{}/{}'.format(self.ip_address, self.netmask)
         return ipaddress.ip_network(network_string, strict=False)
 
+    def expand(self, netmask):
+        """Expand the case to the given network."""
+        if self.netmask and self.netmask < netmask:
+            raise ValueError("Netmask too low")
+        self.netmask = netmask
+
+        # find open cases in the new network, and merge them in.
+        ip_network = self.ip_network
+        for case in Case.objects.filter(end_date=None).exclude(pk=self.pk):
+            if not case.netmask or case.netmask > self.netmask:
+                if ip_network.overlaps(case.ip_network):
+                    # merge them
+                    case.events.all().update(case=self)
+                    case.close()
+                    case.save()
+
+        # get the score from the new events
+        self.recalculate_score()
+
     def recalculate_score(self):
         """Recalculate Case score from actual Event scores."""
         if self.end_date:

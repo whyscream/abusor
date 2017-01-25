@@ -133,3 +133,28 @@ def test_case_get_ip_network(case_factory, ip, netmask, expected):
     """Verify that ip_network is correcty reported."""
     case = case_factory.build(ip_address=ip, netmask=netmask)
     assert case.ip_network == ipaddress.ip_network(expected)
+
+
+def test_case_expand(case_factory):
+    """Vreify that cases will be merged when expanding a case in the nearby network."""
+    for ip in ['192.0.2.34', '192.0.2.178', '198.51.100.17']:
+        case_factory(ip_address=ip)
+    case = case_factory(ip_address='192.0.2.35')
+
+    open_cases = Case.objects.filter(end_date=None)
+    assert open_cases.count() == 4
+
+    case.expand(29)
+    case.refresh_from_db()
+    assert case.events.count() == 2
+    open_cases = Case.objects.filter(end_date=None)
+    assert open_cases.count() == 3
+
+    case.expand(24)
+    case.refresh_from_db()
+    assert case.events.count() == 3
+    open_cases = Case.objects.filter(end_date=None)
+    assert open_cases.count() == 2
+
+    assert '192.0.2.35' in [x.ip_address for x in open_cases]
+    assert '198.51.100.17' in [x.ip_address for x in open_cases]
