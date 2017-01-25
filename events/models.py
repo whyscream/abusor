@@ -9,6 +9,7 @@ class Case(models.Model):
     """A collection of related abuse related events."""
 
     ip_address = models.GenericIPAddressField()
+    netmask = models.CharField(max_length=3, blank=True)
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(null=True)
     subject = models.CharField(max_length=128, blank=True)
