@@ -1,3 +1,5 @@
+import ipaddress
+
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -20,6 +22,14 @@ class Case(models.Model):
         """Default string representation."""
         detail = self.subject if self.subject else self.start_date.isoformat()
         return "{} ({})".format(detail, self.ip_address)
+
+    @property
+    def ip_network(self):
+        """Return the IP network the case covers, calulated from ip address and netmask."""
+        if not self.netmask:
+            return ipaddress.ip_network(self.ip_address)
+        network_string = '{}/{}'.format(self.ip_address, self.netmask)
+        return ipaddress.ip_network(network_string, strict=False)
 
     def recalculate_score(self):
         """Recalculate Case score from actual Event scores."""

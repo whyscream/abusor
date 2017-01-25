@@ -1,3 +1,4 @@
+import ipaddress
 from datetime import timedelta
 
 import pytest
@@ -112,3 +113,22 @@ def test_case_recalculate_score(case, event_factory):
     event.save()
     score = case.recalculate_score()
     assert score == 7.39
+
+
+@pytest.mark.parametrize('ip, netmask, expected', [
+    ('192.0.2.34', None, '192.0.2.34/32'),
+    ('192.0.2.34', 32, '192.0.2.34/32'),
+    ('192.0.2.34', 29, '192.0.2.32/29'),
+    ('192.0.2.34', 24, '192.0.2.0/24'),
+    ('192.0.2.34', 16, '192.0.0.0/16'),
+    ('192.0.2.34', 13, '192.0.0.0/13'),
+    ('2001:db8:7ff5:9ee4:f49e:27cb:bd6e:936d', None, '2001:db8:7ff5:9ee4:f49e:27cb:bd6e:936d/128'),
+    ('2001:db8:7ff5:9ee4:f49e:27cb:bd6e:936d', 128, '2001:db8:7ff5:9ee4:f49e:27cb:bd6e:936d/128'),
+    ('2001:db8:7ff5:9ee4:f49e:27cb:bd6e:936d', 80, '2001:db8:7ff5:9ee4:f49e::/80'),
+    ('2001:db8:7ff5:9ee4:f49e:27cb:bd6e:936d', 64, '2001:db8:7ff5:9ee4::/64'),
+    ('2001:db8:7ff5:9ee4:f49e:27cb:bd6e:936d', 32, '2001:db8::/32'),
+])
+def test_case_get_ip_network(case_factory, ip, netmask, expected):
+    """Verify that ip_network is correcty reported."""
+    case = case_factory.build(ip_address=ip, netmask=netmask)
+    assert case.ip_network == ipaddress.ip_network(expected)
