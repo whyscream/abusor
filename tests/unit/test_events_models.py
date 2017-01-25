@@ -87,29 +87,30 @@ def test_event_find_related_case_newest_closed(event, case_factory):
     assert result == last_closed
 
 
-def test_event_actual_score_decay(event):
+def test_event_actual_score_decay(event_factory):
     """Verify that the actual score lowers when the Event gets older."""
-    event.score = 5
+    event = event_factory(score=5.0, date=NOW)
     assert event.actual_score == 5
 
-    event.report_date = YESTERDAY
+    event.date = YESTERDAY - timedelta(hours=1)
     assert event.actual_score == 4.5
 
-    event.report_date = LAST_WEEK
+    event.date = LAST_WEEK
     assert event.actual_score == 2.39
 
 
 def test_case_recalculate_score(case, event_factory):
     """Verify that the score of a Case is correctly recalculated."""
-    existing = case.events.first()
-    existing.score = 5
-    existing.save()
+    existing_event = case.events.first()
+    existing_event.date = NOW
+    existing_event.score = 5
+    existing_event.save()
 
-    event = event_factory(case=case, score=5)
+    event = event_factory(case=case, score=5, date=NOW)
     score = case.recalculate_score()
     assert score == 10
 
-    event.report_date = LAST_WEEK
+    event.date = LAST_WEEK
     event.save()
     score = case.recalculate_score()
     assert score == 7.39

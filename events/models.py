@@ -84,7 +84,7 @@ class Event(models.Model):
     @property
     def actual_score(self):
         """Calculate the current score based on the original score and the age."""
-        diff = timezone.now() - self.report_date
+        diff = timezone.now() - self.date
         score = float(self.score) * settings.ABUSOR_SCORE_DECAY**diff.days
         return round(score, 2)
 
