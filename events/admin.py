@@ -2,6 +2,7 @@ from django.db.models import Count
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
+from .admin_helpers import RangeListFilter
 from .models import Event, Case
 
 
@@ -31,40 +32,29 @@ class EventInline(admin.TabularInline):
         return False
 
 
-class NumberOfEventsFilter(admin.SimpleListFilter):
+class NumberOfEventsListFilter(RangeListFilter):
+    boundaries = (1, 5, 10, 20, 50, 100)
     title = _('number of events')
     parameter_name = 'number_of_events'
-    _separator = '-'
-
-    def lookups(self, request, model_admin):
-        """Return a tuple of choices to filter on."""
-        boundaries = [5, 10, 20, 50, 100]
-        start = 1
-        for pos, value in enumerate(boundaries):
-            key = '{}{}{}'.format(start, self._separator, value)
-            display = '{} to {}'.format(start, value)
-            start = value + 1
-            yield (key, display)
+    filter_on = 'num_events'
 
     def queryset(self, request, queryset):
-        """Filter based on number of events."""
-        if not self.value() or self._separator not in self.value():
-            return queryset
-        # annotate qs with number of events
+        """Annotate queryset with number of events."""
         queryset = queryset.annotate(num_events=Count('events'))
-        (lower, higher) = self.value().split(self._separator)
-        if lower:
-            queryset = queryset.filter(num_events__gte=lower)
-        if higher:
-            queryset = queryset.filter(num_events__lte=higher)
-        return queryset
+        return super().queryset(request, queryset)
+
+
+class ScoreListFilter(RangeListFilter):
+    boundaries = [0, 1, 5, 10, 50, 100, 200]
+    title = _('score')
+    parameter_name = 'score'
 
 
 class CaseAdmin(admin.ModelAdmin):
 
     list_display = ('ip_address', 'subject', 'start_date', 'number_of_events', 'score', 'is_open')
     list_display_links = ('ip_address', 'subject')
-    list_filter = ('start_date', 'score', NumberOfEventsFilter)
+    list_filter = ('start_date', ScoreListFilter, NumberOfEventsListFilter)
     search_fields = ('ip_address', 'subject', 'start_date', 'description')
 
     inlines = (EventInline,)
