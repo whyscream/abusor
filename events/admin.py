@@ -48,6 +48,7 @@ class ScoreListFilter(RangeListFilter):
     boundaries = [0, 1, 5, 10, 50, 100, 200]
     title = _('score')
     parameter_name = 'score'
+    offset = 0.01
 
 
 class CaseAdmin(admin.ModelAdmin):

@@ -7,6 +7,7 @@ class RangeListFilter(admin.SimpleListFilter):
     separator = '-'
     boundaries = None
     filter_on = None
+    offset = 1
 
     def __init__(self, request, params, model, model_admin):
         """Check for mandatory settings."""
@@ -28,7 +29,7 @@ class RangeListFilter(admin.SimpleListFilter):
 
             raw = '{}{}{}'.format(start, self.separator, value)
             formatted = '{} to {}'.format(start, value)
-            start = value + 1
+            start = value + self.offset
             yield (raw, formatted)
 
     def queryset(self, request, queryset):
