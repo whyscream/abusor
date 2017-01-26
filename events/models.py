@@ -33,14 +33,15 @@ class Case(models.Model):
 
     def expand(self, netmask):
         """Expand the case to the given network."""
-        if self.netmask and self.netmask < netmask:
-            raise ValueError("Netmask too low")
+        if self.netmask and int(self.netmask) < netmask:
+            # netmask too low, don't do anything
+            return
         self.netmask = netmask
 
         # find open cases in the new network, and merge them in.
         ip_network = self.ip_network
         for case in Case.objects.filter(end_date=None).exclude(pk=self.pk):
-            if not case.netmask or case.netmask > self.netmask:
+            if not case.netmask or int(case.netmask) > int(self.netmask):
                 if ip_network.overlaps(case.ip_network):
                     # merge them
                     case.events.all().update(case=self)
