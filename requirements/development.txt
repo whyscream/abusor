@@ -5,3 +5,5 @@ pytest-django
 pytest-factoryboy
 ipdb
 ipython
+requests
+responses

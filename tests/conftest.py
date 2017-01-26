@@ -1,4 +1,5 @@
 import pytest
+import responses
 from faker import Faker
 from pytest_django.lazy_django import skip_if_no_django
 from pytest_factoryboy import register
@@ -26,5 +27,12 @@ def apiclient():
 
 @pytest.fixture
 def fake():
-    """Retrun an instance of the Faker library."""
+    """Return an instance of the Faker library."""
     return Faker()
+
+
+@pytest.yield_fixture
+def mock_resp():
+    """Return an instance of the responses mock library."""
+    with responses.RequestsMock() as rsps:
+        yield rsps
