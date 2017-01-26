@@ -17,6 +17,7 @@ def apply_effect(obj, effect):
 
 # A list of rule requirement operations
 REQUIREMENT_MAP = {
+    'above': lambda subject, value: float(subject) > float(value),
     'below': lambda subject, value: float(subject) < float(value),
     'contains': lambda subject, search: search.lower() in subject.lower(),
 }
