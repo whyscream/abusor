@@ -4,7 +4,7 @@ else
 	PYENV = env
 endif
 
-PYTHON = $(PYENV)/bin/python
+PYTHON = $(PYENV)/bin/python3
 
 
 .PHONY: runserver
