@@ -1,4 +1,9 @@
-PYENV = env
+ifdef TRAVIS
+	PYENV = ~/virtualenv
+else
+	PYENV = env
+endif
+
 PYTHON = $(PYENV)/bin/python
 
 
