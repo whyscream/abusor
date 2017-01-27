@@ -6,6 +6,8 @@ try to aggregate related events into larger contexts (Cases). The rules that
 decide which network context is applied is configurable in the form of
 Business Rules.
 
+[![Build status](https://travis-ci.org/whyscream/abusor.png?branch=master "Build status")](https://travis-ci.org/whyscream/abusor)
+
 ## Abusor flow example
 
 For example, an Event is registered describing a spam email, sent from ip 
