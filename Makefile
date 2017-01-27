@@ -1,5 +1,5 @@
 ifdef TRAVIS
-	PYENV = ~/virtualenv/$(TRAVIS_PYTHON_VERSION)
+	PYENV = ~/virtualenv/python$(TRAVIS_PYTHON_VERSION)
 else
 	PYENV = env
 endif
