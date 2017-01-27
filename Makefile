@@ -1,10 +1,10 @@
 ifdef TRAVIS
-	PYENV = ~/virtualenv
+	PYENV = ~/virtualenv/$(TRAVIS_PYTHON_VERSION)
 else
 	PYENV = env
 endif
 
-PYTHON = $(PYENV)/bin/python3
+PYTHON = $(PYENV)/bin/python
 
 
 .PHONY: runserver
