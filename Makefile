@@ -12,6 +12,11 @@ test: requirements/development.txt.done
 	$(PYENV)/bin/pytest
 
 
+.PHONY: travis-prepare
+travis-prepare:
+	echo "SECRET_KEY='secret'" >> abusor/custom_settings.py
+
+
 requirements/development.txt.done: env
 	$(PYTHON) -m pip install --upgrade -r requirements/development.txt
 	touch $@
