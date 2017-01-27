@@ -6,7 +6,7 @@ try to aggregate related events into larger contexts (Cases). The rules that
 decide which network context is applied is configurable in the form of
 Business Rules.
 
-[![Build status](https://travis-ci.org/whyscream/abusor.png?branch=master "Build status")](https://travis-ci.org/whyscream/abusor)
+[![Build Status](https://travis-ci.org/whyscream/abusor.svg?branch=master)](https://travis-ci.org/whyscream/abusor)
 
 ## Abusor flow example
 
