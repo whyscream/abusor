@@ -1,3 +1,4 @@
+import ipaddress
 from datetime import timedelta
 
 import factory
@@ -25,12 +26,9 @@ class CaseFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = Case
+        exclude = ('_ip_address', '_netmask')
 
-    ip_address = factory.Faker('ipv4')
-
-    @factory.post_generation
-    def related_event(self, create, extracted, **kwargs):
-        """Create a related Event for the Case."""
-        EventFactory.simple_generate(
-            create=create, case=self, ip_address=self.ip_address,
-            date=self.start_date)
+    _ip_address = factory.Faker('ipv4')
+    _netmask = factory.fuzzy.FuzzyInteger(13, 32)
+    ip_network = factory.LazyAttribute(
+        lambda obj: ipaddress.ip_network('{0._ip_address}/{0._netmask}'.format(obj), strict=False))

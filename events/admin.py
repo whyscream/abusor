@@ -53,10 +53,10 @@ class ScoreListFilter(RangeListFilter):
 
 class CaseAdmin(admin.ModelAdmin):
 
-    list_display = ('ip_address', 'subject', 'start_date', 'number_of_events', 'score', 'is_open')
-    list_display_links = ('ip_address', 'subject')
+    list_display = ('ip_network', 'subject', 'start_date', 'number_of_events', 'score', 'is_open')
+    list_display_links = ('ip_network', 'subject')
     list_filter = ('start_date', ScoreListFilter, NumberOfEventsListFilter)
-    search_fields = ('ip_address', 'subject', 'start_date', 'description')
+    search_fields = ('ip_network', 'subject', 'start_date', 'description')
 
     inlines = (EventInline,)
     readonly_fields = ('start_date',)
