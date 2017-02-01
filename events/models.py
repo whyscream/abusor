@@ -24,21 +24,21 @@ class Case(models.Model):
         return "{} ({})".format(detail, self.ip_network)
 
     def expand(self, netmask):
-        """Expand the case to the given network."""
-        if self.netmask and int(self.netmask) < netmask:
+        """Expand the case to the given netmask."""
+        if self.ip_network.prefixlen < netmask:
             # netmask too low, don't do anything
             return
-        self.netmask = netmask
+        # set the new ip_network
+        ip_network_str = '{}/{}'.format(self.ip_network.network_address, netmask)
+        self.ip_network = ipaddress.ip_network(ip_network_str, strict=False)
 
         # find open cases in the new network, and merge them in.
-        ip_network = self.ip_network
         for case in Case.objects.filter(end_date=None).exclude(pk=self.pk):
-            if not case.netmask or int(case.netmask) > int(self.netmask):
-                if ip_network.overlaps(case.ip_network):
-                    # merge them
-                    case.events.all().update(case=self)
-                    case.close()
-                    case.save()
+            if self.ip_network.overlaps(case.ip_network):
+                # merge them
+                case.events.all().update(case=self)
+                case.close()
+                case.save()
 
         # get the score from the new events
         self.recalculate_score()
@@ -106,14 +106,10 @@ class Event(models.Model):
 
     def find_related_case(self):
         """Find a case related to this event."""
-        case = Case.objects.filter(ip_address=self.ip_address, end_date=None).order_by('start_date').last()
-        if case:
-            return case
-
-        # no open case found, try closed ones
-        case = Case.objects.filter(ip_address=self.ip_address, end_date__isnull=False).order_by('end_date').last()
-        if case:
-            return case
+        event_network = ipaddress.ip_network(self.ip_address)
+        for case in Case.objects.filter(end_date=None).order_by('-start_date'):
+            if case.ip_network.overlaps(event_network):
+                return case
 
     def apply_business_rules(self):
         """Find applicable business rules and apply them to the Event."""
@@ -121,7 +117,7 @@ class Event(models.Model):
             case = self.find_related_case()
             if not case:
                 create_data = {
-                    'ip_address': self.ip_address,
+                    'ip_network': ipaddress.ip_network(self.ip_address),
                     'subject': self.subject,
                     'start_date': self.report_date,
                 }

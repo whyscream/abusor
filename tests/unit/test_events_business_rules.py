@@ -1,3 +1,4 @@
+import ipaddress
 from random import randint
 
 import pytest
@@ -13,13 +14,13 @@ def test_new_event_creates_case(event):
     assert event.case is None
     event.apply_business_rules()
     assert event.case is not None
-    assert event.case.ip_address == event.ip_address
+    assert event.ip_address in str(event.case.ip_network)
     assert event.case.subject == event.subject
 
 
-def test_new_event_finds_existing_case(case, event_factory):
+def test_new_event_finds_existing_case(event, case_factory):
     """Cerify that an open Case is connected to a new event when applicable."""
-    event = event_factory(ip_address=case.ip_address)
+    case = case_factory(ip_network=ipaddress.ip_network(event.ip_address))
     assert event.case is None
     event.apply_business_rules()
     assert event.case == case
@@ -39,13 +40,13 @@ def test_rule_event_gets_score_assigned(event, settings, fake):
     assert event.score == score
 
 
-def test_rule_score_decay_closes_case(settings, case):
+def test_rule_score_decay_closes_case(settings, case, event_factory):
     """Verify that when a Case score drop below a threshold, the case is closed."""
     settings.ABUSOR_CASE_RULES = [{
         'when': ['score', 'below', 3],
         'then': ['call', 'close', None]
     }]
-    event = case.events.first()
+    event = event_factory(case=case)
     event.score = 2
     event.save()
 
