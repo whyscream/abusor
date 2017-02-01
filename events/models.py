@@ -4,14 +4,14 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+from .fields import GenericIPNetworkField
 from .rules import apply_effect, check_requirement
 
 
 class Case(models.Model):
     """A collection of related abuse related events."""
 
-    ip_address = models.GenericIPAddressField()
-    netmask = models.CharField(max_length=3, blank=True)
+    ip_network = GenericIPNetworkField(blank=False)
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(null=True)
     subject = models.CharField(max_length=128, blank=True)
@@ -21,15 +21,7 @@ class Case(models.Model):
     def __str__(self):
         """Default string representation."""
         detail = self.subject if self.subject else self.start_date.isoformat()
-        return "{} ({})".format(detail, self.ip_address)
-
-    @property
-    def ip_network(self):
-        """Return the IP network the case covers, calulated from ip address and netmask."""
-        if not self.netmask:
-            return ipaddress.ip_network(self.ip_address)
-        network_string = '{}/{}'.format(self.ip_address, self.netmask)
-        return ipaddress.ip_network(network_string, strict=False)
+        return "{} ({})".format(detail, self.ip_network)
 
     def expand(self, netmask):
         """Expand the case to the given network."""
