@@ -19,7 +19,7 @@ test: requirements/development.txt.done
 
 .PHONY: travis-prepare
 travis-prepare:
-	echo "SECRET_KEY='secret'" >> abusor/custom_settings.py
+	echo "SECRET_KEY='secret'" >> abusor/settings/custom.py
 
 
 requirements/development.txt.done: $(PYENV)
