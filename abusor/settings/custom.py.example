@@ -1,4 +1,4 @@
-# Copy this file to 'custom_settings.py' and adapt as needed.
+# Copy this file to 'custom.py' and adapt as needed.
 # You can put all settings here that should not be in VCS.
 
 # configure database

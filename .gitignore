@@ -8,7 +8,7 @@ requirements/*.done
 
 # deployment files
 static/
-abusor/custom_settings.py
+abusor/settings/custom.py
 
 # test database
 *.sqlite3

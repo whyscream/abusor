@@ -1,4 +1,4 @@
-from abusor.default_settings import *  # noqa
+from abusor.settings.django import *  # noqa
 
 INSTALLED_APPS = INSTALLED_APPS + [
     'abusor',
@@ -25,6 +25,6 @@ ABUSOR_CASE_RULES = []
 
 try:
     # load custom settings when available
-    from abusor.custom_settings import *  # noqa
+    from abusor.settings.custom import *  # noqa
 except ImportError:
     pass
