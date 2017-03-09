@@ -32,6 +32,25 @@ class EventInline(admin.TabularInline):
         return False
 
 
+class IsOpenListFilter(admin.SimpleListFilter):
+    title = _('is open')
+    parameter_name = 'is_open'
+
+    def lookups(self, request, model_admin):
+        """Return the boolean options."""
+        return (
+            ('true', _('Yes')),
+            ('false', _('No'))
+        )
+
+    def queryset(self, request, queryset):
+        """Find out whether the case is open."""
+        if self.value() == 'true':
+            return queryset.filter(end_date=None)
+        if self.value() == 'false':
+            return queryset.exclude(end_date=None)
+
+
 class NumberOfEventsListFilter(RangeListFilter):
     boundaries = (1, 5, 10, 20, 50, 100)
     title = _('number of events')
@@ -55,7 +74,7 @@ class CaseAdmin(admin.ModelAdmin):
 
     list_display = ('ip_network', 'subject', 'start_date', 'number_of_events', 'score', 'is_open')
     list_display_links = ('ip_network', 'subject')
-    list_filter = ('start_date', ScoreListFilter, NumberOfEventsListFilter)
+    list_filter = (IsOpenListFilter, 'start_date', ScoreListFilter, NumberOfEventsListFilter)
     search_fields = ('ip_network', 'subject', 'start_date', 'description')
 
     inlines = (EventInline,)
