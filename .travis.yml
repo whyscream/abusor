@@ -5,6 +5,7 @@ python:
   - "3.6"
 env:
   DJANGO_SECRET_KEY=secret
-
+install:
+  - make requirements/development.txt.done
 script:
-  - "make test"
+  - make test
