@@ -27,6 +27,8 @@ def test_ipnetwork_field_to_python(fake):
     result = field.to_python(fake.ipv6())
     assert isinstance(result, ipaddress.IPv6Network)
 
+    assert field.to_python(None) is None
+
 
 def test_ipnetwork_field_get_prep_value(fake):
     """Verify that the field returns proper databse query values."""

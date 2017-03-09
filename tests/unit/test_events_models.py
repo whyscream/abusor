@@ -144,3 +144,8 @@ def test_case_expand(case_factory, event_factory):
 
     assert '192.0.2.0/24' in [str(x.ip_network) for x in open_cases]
     assert '198.51.100.17/32' in [str(x.ip_network) for x in open_cases]
+
+    case.expand(29)
+    case.save()
+    case.refresh_from_db()
+    assert case.ip_network.prefixlen == 24, 'prefix length was unexpectedly decreased'
