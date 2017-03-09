@@ -4,10 +4,11 @@ python:
   - "3.5"
   - "3.6"
 env:
-  DJANGO_SECRET_KEY=secret
-  DJANGO_VERSION=1.8.17
-  DJANGO_VERSION=1.9.12
-  DJANGO_VERSION=1.10.6
+  global:
+    - DJANGO_SECRET_KEY=secret
+  - DJANGO_VERSION=1.8.17
+  - DJANGO_VERSION=1.9.12
+  - DJANGO_VERSION=1.10.6
 install:
   - pip install django==$DJANGO_VERSION
   - make requirements/development.txt.done
