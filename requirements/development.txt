@@ -1,8 +1,10 @@
 -r base.txt
 
 factory_boy
+pytest-cov
 pytest-django
 pytest-factoryboy
+pytest-isort
 ipdb
 ipython
 requests

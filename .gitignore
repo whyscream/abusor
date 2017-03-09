@@ -15,3 +15,4 @@ abusor/settings/custom.py
 
 # pytest artifacts
 .cache
+.coverage
