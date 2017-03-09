@@ -22,12 +22,12 @@ travis-prepare:
 	echo "SECRET_KEY='secret'" >> abusor/settings/custom.py
 
 
-requirements/development.txt.done: $(PYENV)
+requirements/development.txt.done: $(PYENV) requirements/development.txt
 	$(PYTHON) -m pip install --upgrade -r requirements/development.txt
 	touch $@
 
 
-requirements/base.txt.done: $(PYENV)
+requirements/base.txt.done: $(PYENV) requirements/base.txt
 	$(PYTHON) -m pip install --upgrade -r requirements/base.txt
 	touch $@
 
