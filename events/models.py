@@ -61,14 +61,21 @@ class Case(models.Model):
         self.end_date = timezone.now()
 
     def apply_business_rules(self):
-        """Apply business rules on the case."""
+        """
+        Apply business rules on the case.
+
+        Returns the number of triggered rules.
+        """
         self.recalculate_score()
 
+        rules_triggered = 0
         for rule in settings.ABUSOR_CASE_RULES:
             result = check_requirement(self, rule['when'])
             if result:
                 apply_effect(self, rule['then'])
+                rules_triggered += 1
         self.save()
+        return rules_triggered
 
 
 class Event(models.Model):
