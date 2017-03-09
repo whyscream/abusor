@@ -9,6 +9,7 @@ import argparse
 import os
 import sys
 from datetime import datetime, timedelta, tzinfo
+from textwrap import dedent
 
 import requests
 
@@ -16,10 +17,22 @@ import requests
 def parse_arguments():
     """Setup and handle command line arguments."""
     default_uri = 'http://localhost:8000'
+    epilog = dedent("""\
+        The --token and --uri args can also be set using environment variables,
+        when you don't want the values to be visible in the output of 'ps' etc.
+        To use this, set the ABUSOR_TOKEN and ABUSOR_URI environment variables.
 
-    parser = argparse.ArgumentParser(description="Abusor API client")
+        The --subject argument may contain spaces. When your environment does not
+        allow you to use these, it's possible to 'escape' the spaces by replacing
+        them by double underscores (__). The client will 'unescape' these into
+        spaces before posting your data.""")
+
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Abusor API client",
+        epilog=epilog)
     parser.add_argument('--ip', '-i', type=str, metavar='x.x.x.x', required=True,
-                        help="The IP address to report")
+                        help="The IPv4 or IPv6 address to report")
     parser.add_argument('--subject', '-s', type=str, required=True,
                         help='The event subject')
     parser.add_argument('--token', '-t', type=str,
