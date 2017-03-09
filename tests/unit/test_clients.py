@@ -4,7 +4,7 @@ import pytest
 import responses
 from django.urls import reverse
 
-from client.abusor_api_client import post_to_api
+from client.abusor_api_client import parse_arguments, post_to_api
 
 
 def test_post_to_api(fake, mock_resp):
@@ -48,3 +48,30 @@ def test_post_to_api_error(fake, mock_resp):
         post_to_api(uri, token, ip, subject)
     assert '[401]' in str(excinfo.value)
     assert 'No unauthorized access' in str(excinfo.value)
+
+
+def test_parse_arguments_subject_escaping(fake, monkeypatch):
+    """Verify that subject escaping using double underscore works properly."""
+    ip = fake.ipv4()
+    subject = fake.sentence()
+    assert ' ' in subject
+
+    escaped_subject = subject.replace(' ', '__')
+    assert ' ' not in escaped_subject
+
+    monkeypatch.setattr('sys.argv', ['progname', '--subject', escaped_subject, '--ip', ip])
+    args = parse_arguments()
+    assert args.subject == subject
+
+
+def test_parse_arguments_environment_vars(fake, monkeypatch):
+    """Verify that we can set various arguments using environment vars."""
+    uri = fake.uri().rstrip('/')
+    token = fake.sha1()
+    monkeypatch.setenv('ABUSOR_URI', uri)
+    monkeypatch.setenv('ABUSOR_TOKEN', token)
+
+    monkeypatch.setattr('sys.argv', ['progname', '-i', '1.2.3.4', '-s', 'foo'])
+    args = parse_arguments()
+    assert args.uri == uri
+    assert args.token == token

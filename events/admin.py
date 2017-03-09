@@ -1,9 +1,9 @@
-from django.db.models import Count
 from django.contrib import admin
+from django.db.models import Count
 from django.utils.translation import ugettext_lazy as _
 
 from .admin_helpers import RangeListFilter
-from .models import Event, Case
+from .models import Case, Event
 
 
 class EventAdmin(admin.ModelAdmin):
