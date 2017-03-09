@@ -3,5 +3,8 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+env:
+  DJANGO_SECRET_KEY=secret
+
 script:
-  - "make travis-prepare test"
+  - "make test"
