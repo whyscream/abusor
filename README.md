@@ -48,7 +48,7 @@ In the above example, all kinds of decision points can be configured:
 ## Registering events
 
 The application has a simple API that you can use for adding new events. A
-simple commandline client is available in the `clients` directory, which works
+simple commandline client is available in the `client` directory, which works
 without external dependencies: no virtualenvs or other packages needed, only
 python 3.4 (or higher). It's also possible to manage Events and Cases 
 manually through the API frontend, or through the admin interface. 
