@@ -4,8 +4,7 @@ python:
   - "3.5"
   - "3.6"
 env:
-  global:
-    - DJANGO_SECRET_KEY=secret
+  - DJANGO_SECRET_KEY=secret
   - DJANGO_VERSION=1.8.17
   - DJANGO_VERSION=1.9.12
   - DJANGO_VERSION=1.10.6
