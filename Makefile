@@ -18,12 +18,20 @@ test: requirements/development.txt.done
 
 
 requirements/development.txt.done: $(PYENV) requirements/development.txt
+ifeq ($(PIP_UPGRADE),no)
+	$(PYTHON) -m pip install -r requirements/development.txt
+else
 	$(PYTHON) -m pip install --upgrade -r requirements/development.txt
+endif
 	touch $@
 
 
 requirements/base.txt.done: $(PYENV) requirements/base.txt
+ifeq ($(PIP_UPGRADE),no)
+	$(PYTHON) -m pip install -r requirements/base.txt
+else
 	$(PYTHON) -m pip install --upgrade -r requirements/base.txt
+endif
 	touch $@
 
 

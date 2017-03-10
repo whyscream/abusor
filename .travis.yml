@@ -7,6 +7,7 @@ python:
 env:
   global:
     - DJANGO_SECRET_KEY=secret
+    - PIP_UPGRADE=no
   matrix:
     - DJANGO_VERSION=1.8.17
     - DJANGO_VERSION=1.9.12
