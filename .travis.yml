@@ -11,11 +11,8 @@ env:
     - DJANGO_VERSION=1.8.17
     - DJANGO_VERSION=1.9.12
     - DJANGO_VERSION=1.10.6
-    - DRF_VERSION=3.6.1
-    - DRF_VERSION=3.5.4
-    - DRF_VERSION=3.4.7
 install:
-  - pip install django==$DJANGO_VERSION djangorestframework=$DRF_VERSION
+  - pip install django==$DJANGO_VERSION
   - make requirements/development.txt.done
 script:
   - make test
