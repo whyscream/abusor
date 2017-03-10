@@ -1,7 +1,19 @@
 language: python
+cache: pip
 python:
-  - "3.4"
-  - "3.5"
-  - "3.6"
+  - 3.4
+  - 3.5
+  - 3.6
+env:
+  global:
+    - DJANGO_SECRET_KEY=secret
+    - PIP_UPGRADE=no
+  matrix:
+    - DJANGO_VERSION=1.9.12
+    - DJANGO_VERSION=1.10.6
+install:
+  - pip install --upgrade pytest
+  - pip install django==$DJANGO_VERSION
+  - make requirements/development.txt.done
 script:
-  - "make travis-prepare test"
+  - make test

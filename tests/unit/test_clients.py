@@ -2,9 +2,14 @@ import json
 
 import pytest
 import responses
-from django.urls import reverse
 
 from client.abusor_api_client import parse_arguments, post_to_api
+
+try:
+    from django.urls import reverse
+except ImportError:
+    # for django < 1.10
+    from django.core.urlresolvers import reverse
 
 
 def test_post_to_api(fake, mock_resp):
