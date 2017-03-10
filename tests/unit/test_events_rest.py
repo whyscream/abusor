@@ -1,7 +1,12 @@
-from django.urls import reverse
 from django.utils import timezone
 
 from events.models import Event
+
+try:
+    from django.urls import reverse
+except ImportError:
+    # for django < 1.10
+    from django.core.urlresolvers import reverse
 
 
 def test_create_event(apiclient, admin_user, fake):
