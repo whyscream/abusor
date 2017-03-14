@@ -33,15 +33,30 @@ class Case(models.Model):
         self.ip_network = ipaddress.ip_network(ip_network_str, strict=False)
 
         # find open cases in the new network, and merge them in.
+        merged = 0
         for case in Case.objects.filter(end_date=None).exclude(pk=self.pk):
             if self.ip_network.overlaps(case.ip_network):
                 # merge them
                 case.events.all().update(case=self)
                 case.close()
                 case.save()
+                merged += 1
 
         # get the score from the new events
         self.recalculate_score()
+        return bool(merged)
+
+    def expand_ipv4(self, netmask):
+        """Expand to the given netmask when the case addresses an ipv4 network."""
+        if self.ip_network.version != 4:
+            return False
+        return self.expand(netmask)
+
+    def expand_ipv6(self, netmask):
+        """Expand to the given netmask when the case addresses an ipv6 network."""
+        if self.ip_network.version != 6:
+            return False
+        return self.expand(netmask)
 
     def recalculate_score(self):
         """Recalculate Case score from actual Event scores."""
@@ -64,6 +79,7 @@ class Case(models.Model):
         """
         Apply business rules on the case.
 
+        TODO: return the number applied effects, not the number of triggered rules
         Returns the number of triggered rules.
         """
         self.recalculate_score()
