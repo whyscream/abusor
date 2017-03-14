@@ -25,5 +25,5 @@ REQUIREMENT_MAP = {
 # A list of rule effect appliers
 APPLY_MAP = {
     'call': lambda obj, attr, value: getattr(obj, attr)(value),
-    'set': lambda obj, attr, value: setattr(obj, attr, value),
+    'set': lambda obj, attr, value: setattr(obj, attr, value) and True,
 }

@@ -16,15 +16,15 @@ class Command(BaseCommand):
         updated_cases = 0
         closed_cases = 0
         for case in cases:
-            rules_triggered = case.apply_business_rules()  # also recalculates scores
-            if rules_triggered:
+            applied = case.apply_business_rules()  # also recalculates scores
+            if applied:
                 if case.end_date:
                     closed_cases += 1
                     msg = "Case '{}' updated by {} rule(s) and closed."
                 else:
                     updated_cases += 1
                     msg = "Case '{}' updated by {} rule(s)."
-                self.stdout.write(msg.format(case, rules_triggered))
+                self.stdout.write(msg.format(case, applied))
 
         self.stdout.write(self.style.SUCCESS('Processed {} cases, updated {} and closed {}.'.format(
             cases.count(), updated_cases, closed_cases)))
