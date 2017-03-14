@@ -3,7 +3,7 @@ from random import randint
 
 import pytest
 
-from events.models import Case
+from events.models import Case, Event
 
 
 pytestmark = pytest.mark.django_db
@@ -53,3 +53,15 @@ def test_rule_score_decay_closes_case(settings, case, event_factory):
     applied = case.apply_business_rules()
     assert applied == 1
     assert case.end_date is not None
+
+
+def test_rule_applied_effects(settings, event_factory):
+    """Verify the number of applied rule effects."""
+    settings.ABUSOR_EVENT_RULES = [
+        {'when': ['subject', 'contains', 'foo'], 'then': ['set', 'score', 5]},
+        {'when': ['description', 'contains', 'bar'], 'then': ['set', 'category', Event.SPAM]}
+    ]
+
+    event = event_factory(subject='foo', description='bar')
+    applied = event.apply_business_rules()
+    assert applied == 2

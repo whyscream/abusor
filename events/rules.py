@@ -15,6 +15,11 @@ def apply_effect(obj, effect):
     return apply(obj, attr, value)
 
 
+def _set(obj, attr, value):
+    """Set an object attribute and return True."""
+    setattr(obj, attr, value)
+    return True
+
 # A list of rule requirement operations
 REQUIREMENT_MAP = {
     'above': lambda subject, value: float(subject) > float(value),
@@ -25,5 +30,5 @@ REQUIREMENT_MAP = {
 # A list of rule effect appliers
 APPLY_MAP = {
     'call': lambda obj, attr, value: getattr(obj, attr)(value),
-    'set': lambda obj, attr, value: setattr(obj, attr, value) and True,
+    'set': _set,
 }
