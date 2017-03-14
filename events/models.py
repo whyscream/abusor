@@ -149,8 +149,12 @@ class Event(models.Model):
                 case = Case.objects.create(**create_data)
             self.case = case
 
+        applied = 0
         for rule in settings.ABUSOR_EVENT_RULES:
-            result = check_requirement(self, rule['when'])
-            if result:
-                apply_effect(self, rule['then'])
+            require_result = check_requirement(self, rule['when'])
+            if require_result:
+                effect_result = apply_effect(self, rule['then'])
+                if effect_result:
+                    applied += 1
         self.save()
+        return applied
