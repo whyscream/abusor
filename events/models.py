@@ -47,13 +47,13 @@ class Case(models.Model):
         return bool(merged)
 
     def expand_ipv4(self, netmask):
-        """Expand to the given netmask when the case addresses an ipv4 network."""
+        """Expand to the given netmask when the Case addresses an ipv4 network."""
         if self.ip_network.version != 4:
             return False
         return self.expand(netmask)
 
     def expand_ipv6(self, netmask):
-        """Expand to the given netmask when the case addresses an ipv6 network."""
+        """Expand to the given netmask when the Case addresses an ipv6 network."""
         if self.ip_network.version != 6:
             return False
         return self.expand(netmask)
@@ -74,6 +74,7 @@ class Case(models.Model):
         """Close the case."""
         self.recalculate_score()
         self.end_date = timezone.now()
+        return True
 
     def apply_business_rules(self):
         """
@@ -84,14 +85,15 @@ class Case(models.Model):
         """
         self.recalculate_score()
 
-        rules_triggered = 0
+        applied = 0
         for rule in settings.ABUSOR_CASE_RULES:
-            result = check_requirement(self, rule['when'])
-            if result:
-                apply_effect(self, rule['then'])
-                rules_triggered += 1
+            require_result = check_requirement(self, rule['when'])
+            if require_result:
+                effect_result = apply_effect(self, rule['then'])
+                if effect_result:
+                    applied += 1
         self.save()
-        return rules_triggered
+        return applied
 
 
 class Event(models.Model):

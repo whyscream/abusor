@@ -45,6 +45,15 @@ In the above example, all kinds of decision points can be configured:
 * How fast (over time) will Event scores degrade? What is the threshold for 
   closing a case?
 
+### Available actions
+
+* set a case property, for instance the case score.
+* expand_ipv4: expand the netmask for the case if the case is for an ipv4 
+  network. Open cases in the new netmask are merged into the current case.
+* expand_ipv6: expand the netmask for the case if the case is for an ipv6
+  network.
+* close: close a case.
+
 ## Registering events
 
 The application has a simple API that you can use for adding new events. A

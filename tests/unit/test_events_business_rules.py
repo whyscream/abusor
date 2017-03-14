@@ -50,5 +50,6 @@ def test_rule_score_decay_closes_case(settings, case, event_factory):
     event.score = 2
     event.save()
 
-    case.apply_business_rules()
+    applied = case.apply_business_rules()
+    assert applied == 1
     assert case.end_date is not None
