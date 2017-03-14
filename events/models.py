@@ -149,7 +149,6 @@ class Event(models.Model):
                 case = Case.objects.create(**create_data)
             self.case = case
 
-        import ipdb; ipdb.set_trace()  # noqa
         applied = 0
         for rule in settings.ABUSOR_EVENT_RULES:
             require_result = check_requirement(self, rule['when'])
