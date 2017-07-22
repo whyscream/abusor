@@ -9,8 +9,8 @@ env:
     - DJANGO_SECRET_KEY=secret
     - PIP_UPGRADE=no
   matrix:
-    - DJANGO_VERSION=1.9.12
-    - DJANGO_VERSION=1.10.6
+    - DJANGO_VERSION=1.10.7
+    - DJANGO_VERSION=1.11.3
 install:
   - pip install --upgrade pytest
   - pip install django==$DJANGO_VERSION

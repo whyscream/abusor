@@ -6,13 +6,12 @@ from django.utils import timezone
 
 from events.models import Case, Event
 
-
-pytestmark = pytest.mark.django_db
-
 # some dates
 NOW = timezone.now()
 YESTERDAY = NOW - timedelta(days=1)
 LAST_WEEK = NOW - timedelta(days=7)
+
+pytestmark = pytest.mark.django_db
 
 
 def test_case_str_formatting(fake):

@@ -5,7 +5,6 @@ import pytest
 
 from events.models import Case, Event
 
-
 pytestmark = pytest.mark.django_db
 
 
