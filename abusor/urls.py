@@ -4,7 +4,6 @@ from rest_framework import routers
 
 from events.views import CaseViewSet, EventViewSet
 
-
 router = routers.DefaultRouter()
 router.register(r'api/case', CaseViewSet)
 router.register(r'api/event', EventViewSet)
