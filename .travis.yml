@@ -9,7 +9,6 @@ env:
     - DJANGO_SECRET_KEY=secret
     - PIP_UPGRADE=no
   matrix:
-    - DJANGO_VERSION=1.8.18
     - DJANGO_VERSION=1.10.7
     - DJANGO_VERSION=1.11.3
 install:
