@@ -1,6 +1,7 @@
+from unittest.mock import patch
+
 from django.utils import timezone
 
-import events.utils
 from events.models import Event
 
 try:
@@ -10,11 +11,10 @@ except ImportError:
     from django.core.urlresolvers import reverse
 
 
-def test_create_event(apiclient, admin_user, fake, monkeypatch):
+@patch('events.utils.dns_lookup')
+def test_create_event(patched, apiclient, admin_user, fake, monkeypatch):
     """Create an event through the API."""
-    def mock_dns_lookup(lookup, type):
-        return ['"13335 | 104.16.0.0/12 | US | arin | 2014-03-28"']
-    monkeypatch.setattr(events.utils, 'dns_lookup', mock_dns_lookup)
+    patched.return_value = ['"13335 | 104.16.0.0/12 | US | arin | 2014-03-28"']
 
     apiclient.force_authenticate(admin_user)
     date = timezone.now()

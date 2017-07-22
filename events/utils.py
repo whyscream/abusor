@@ -8,14 +8,12 @@ def find_as_number(ip_address):
 
     The result is retrieved from the origin(6).asn.cymru.com DNS service.
     """
-    reverse_ptr = ip_address.reverse_pointer
-    if reverse_ptr.endswith('.in-addr.arpa'):
-        # ipv4 lookup
-        lookup = reverse_ptr.replace('in-addr.arpa', 'origin.asn.cymru.com')
-    elif reverse_ptr.endswith('.ip6.arpa'):
-        # ipv6 lookup
-        lookup = reverse_ptr.replace('ip6.arpa', 'origin6.asn.cymru.com')
-
+    if ip_address.version == 4:
+        reverse = '.'.join(reversed(ip_address.exploded.split('.')))
+        lookup = '.'.join([reverse, 'origin.asn.cymru.com'])
+    elif ip_address.version == 6:
+        reverse = '.'.join(reversed(ip_address.exploded.replace(':', '')))
+        lookup = '.'.join([reverse, 'origin6.asn.cymru.com'])
     answers = dns_lookup(lookup, 'TXT')
     if not answers:
         return None
