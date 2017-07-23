@@ -48,7 +48,7 @@ def test_find_as_number_no_result(patched, fake):
 
 @patch('events.utils.dns_lookup')
 def test_find_as_number_multiple(patched, fake):
-    """Verify that we can handle an empty result froma dns lookup."""
+    """Verify that we can handle a result with multiple AS numbers."""
     patched.return_value = ['"123 456 | 104.16.0.0/12 | US | arin | 2014-03-28"']
 
     ip = ipaddress.ip_address(fake.ipv4())
