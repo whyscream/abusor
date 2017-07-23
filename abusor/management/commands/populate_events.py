@@ -1,5 +1,6 @@
 import ipaddress
 
+from django.db.models import Q
 from django.core.management.base import BaseCommand
 
 from events.models import Event
@@ -11,7 +12,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         """Populate events with third-party data."""
-        events = Event.objects.all()
+        events = Event.objects.filter(
+            Q(as_number__isnull=True) |
+            Q(country_code='')
+        )
         self.stdout.write('Examining {} events.'.format(len(events)))
 
         updates = 0
