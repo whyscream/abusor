@@ -29,6 +29,9 @@ def find_as_number(ip_address):
     txt = answers[0]
     # parse the format used by cymru: "13335 | 104.16.0.0/12 | US | arin | 2014-03-28"
     as_number, network, country, rir, date = [x.strip('" ') for x in txt.split('|')]
+    if ' ' in as_number:
+        # sometimes multiple AS numbers announce the ip (multihoming), just pick one
+        as_number = as_number.split(' ')[0]
     return int(as_number)
 
 

@@ -11,6 +11,9 @@ from .rules import apply_effect, check_requirement
 class Case(models.Model):
     """A collection of related abuse related events."""
 
+    class Meta:
+        ordering = ('start_date', )
+
     ip_network = GenericIPNetworkField(blank=False)
     as_number = models.IntegerField(blank=True, null=True)
     country_code = models.CharField(max_length=2, blank=True)
@@ -100,6 +103,9 @@ class Case(models.Model):
 
 class Event(models.Model):
     """An abuse related event."""
+
+    class Meta:
+        ordering = ('date', )
 
     LOGIN = 'login'
     MALWARE = 'malware'

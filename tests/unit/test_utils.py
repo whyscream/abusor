@@ -46,6 +46,16 @@ def test_find_as_number_no_result(patched, fake):
     assert as_number is None
 
 
+@patch('events.utils.dns_lookup')
+def test_find_as_number_multiple(patched, fake):
+    """Verify that we can handle a result with multiple AS numbers."""
+    patched.return_value = ['"123 456 | 104.16.0.0/12 | US | arin | 2014-03-28"']
+
+    ip = ipaddress.ip_address(fake.ipv4())
+    as_number = find_as_number(ip)
+    assert as_number == 123
+
+
 @patch('GeoIP.open')
 def test_find_country_code_ipv4(patched):
     """Verify that we can extract a country code."""
