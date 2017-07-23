@@ -35,3 +35,23 @@ def mock_resp():
     """Return an instance of the responses mock library."""
     with responses.RequestsMock() as rsps:
         yield rsps
+
+
+@pytest.fixture
+def ipv4_case(event, case_factory):
+    """Return a case with an attached event."""
+    case = case_factory(_ip_address=event.ip_address, _netmask=32)
+    event.case = case
+    event.save()
+    return case
+
+
+@pytest.fixture
+def ipv6_case(fake, event_factory, case_factory):
+    """Return a case with an attached event."""
+    ip = fake.ipv6()
+    event = event_factory(ip_address=ip)
+    case = case_factory(_ip_address=ip, _netmask=128)
+    event.case = case
+    event.save()
+    return case
