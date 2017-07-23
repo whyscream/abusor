@@ -19,10 +19,10 @@ def find_as_number(ip_address):
     """
     if ip_address.version == 4:
         reverse = '.'.join(reversed(ip_address.exploded.split('.')))
-        lookup = '.'.join([reverse, 'origin.asn.cymru.com'])
+        lookup = '.'.join([reverse, 'origin.asn.cymru.com.'])
     elif ip_address.version == 6:
         reverse = '.'.join(reversed(ip_address.exploded.replace(':', '')))
-        lookup = '.'.join([reverse, 'origin6.asn.cymru.com'])
+        lookup = '.'.join([reverse, 'origin6.asn.cymru.com.'])
     answers = dns_lookup(lookup, 'TXT')
     if not answers:
         return None
