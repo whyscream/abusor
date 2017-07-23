@@ -1,3 +1,5 @@
+import ipaddress
+
 from django.core.management.base import BaseCommand
 
 from events.models import Event
@@ -16,7 +18,8 @@ class Command(BaseCommand):
 
         for event in events:
             if not event.as_number:
-                event.as_number = find_as_number(event.ip_address)
+                ip_address = ipaddress.ip_address(event.ip_address)
+                event.as_number = find_as_number(ip_address)
             event.apply_business_rules()
             if event.case:
                 event.case.apply_business_rules()
