@@ -13,6 +13,7 @@ class Case(models.Model):
 
     ip_network = GenericIPNetworkField(blank=False)
     as_number = models.IntegerField(blank=True, null=True)
+    country_code = models.CharField(max_length=2, blank=True)
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(null=True)
     subject = models.CharField(max_length=128, blank=True)
@@ -111,6 +112,7 @@ class Event(models.Model):
 
     ip_address = models.GenericIPAddressField()
     as_number = models.IntegerField(blank=True, null=True)
+    country_code = models.CharField(max_length=2, blank=True)
     date = models.DateTimeField()
     subject = models.CharField(max_length=128)
     description = models.TextField(blank=True)
@@ -146,6 +148,7 @@ class Event(models.Model):
                 create_data = {
                     'ip_network': ipaddress.ip_network(self.ip_address),
                     'as_number': self.as_number,
+                    'country_code': self.country_code,
                     'subject': self.subject,
                     'start_date': self.report_date,
                 }

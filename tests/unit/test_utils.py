@@ -1,8 +1,14 @@
 import ipaddress
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
-# import events.utils as utils
-from events.utils import find_as_number
+import GeoIP
+
+from events.utils import find_as_number, find_country_code
+
+# a mocked geoip database object for use in tests
+mock_geoip = Mock(spec=GeoIP.GeoIP)
+mock_geoip.country_code_by_addr = Mock(return_value='NL')
+mock_geoip.country_code_by_addr_v6 = Mock(return_value='BE')
 
 
 @patch('events.utils.dns_lookup')
@@ -38,3 +44,34 @@ def test_find_as_number_no_result(patched, fake):
     ip = ipaddress.ip_address(fake.ipv4())
     as_number = find_as_number(ip)
     assert as_number is None
+
+
+@patch('GeoIP.open')
+def test_find_country_code_ipv4(patched):
+    """Verify that we can extract a country code."""
+    patched.return_value = mock_geoip
+
+    ip = ipaddress.ip_address('1.2.3.4')
+    country_code = find_country_code(ip)
+    assert country_code == 'NL'
+
+
+@patch('GeoIP.open')
+def test_find_country_code_ipv6(patched):
+    """Verify that we can extract a country code."""
+    patched.return_value = mock_geoip
+
+    ip = ipaddress.ip_address('2001:db8::1')
+    country_code = find_country_code(ip)
+    assert country_code == 'BE'
+
+
+@patch('GeoIP.open')
+def test_find_country_code_no_result(patched, fake):
+    """Verify that we can handle a Geoip error."""
+    mock_geoip.country_code_by_addr = Mock(side_effect=GeoIP.error)
+    patched.return_value = mock_geoip
+
+    ip = ipaddress.ip_address(fake.ipv4())
+    country_code = find_country_code(ip)
+    assert country_code is None
