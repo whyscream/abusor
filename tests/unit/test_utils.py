@@ -20,7 +20,7 @@ def test_find_as_number_ipv4(patched):
     as_number = find_as_number(ip)
     assert as_number == 13335
 
-    patched.assert_called_with('4.3.2.1.origin.asn.cymru.com', 'TXT')
+    patched.assert_called_with('4.3.2.1.origin.asn.cymru.com.', 'TXT')
 
 
 @patch('events.utils.dns_lookup')
@@ -32,8 +32,8 @@ def test_find_as_number_ipv6(patched):
     as_number = find_as_number(ip)
     assert as_number == 3265
 
-    patched.assert_called_with('1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.origin6.asn.cymru.com',
-                               'TXT')
+    patched.assert_called_with(
+        '1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.origin6.asn.cymru.com.', 'TXT')
 
 
 @patch('events.utils.dns_lookup')
