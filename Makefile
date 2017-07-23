@@ -39,6 +39,12 @@ $(PYENV):
 	virtualenv -p $(shell which python3) $@
 
 
+deploy:
+	$(PYTHON) -m pip install --upgrade -r requirements/base.txt
+	$(PYTHON) manage.py migrate --noinput
+	$(PYTHON) manage.py collectstatic --noinput
+	sudo systemctl reload uwsgi
+
 .PHONY: clean
 clean:
 	rm -f requirements/*.done
