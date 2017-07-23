@@ -18,8 +18,8 @@ class Command(BaseCommand):
 
         for event in events:
             ip_address = ipaddress.ip_address(event.ip_address)
-            event.as_number = find_as_number(ip_address)
-            event.country_code = find_country_code(ip_address) or ''
+            event.as_number = find_as_number(ip_address) or -1
+            event.country_code = find_country_code(ip_address) or '--'
             event.apply_business_rules()
             if event.case:
                 event.case.apply_business_rules()

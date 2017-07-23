@@ -23,10 +23,10 @@ class Command(BaseCommand):
             updated = False
             ip_address = ipaddress.ip_address(event.ip_address)
             if not event.as_number:
-                event.as_number = find_as_number(ip_address)
+                event.as_number = find_as_number(ip_address) or -1
                 updated = True
             if not event.country_code:
-                event.country_code = find_country_code(ip_address) or ''
+                event.country_code = find_country_code(ip_address) or '--'
                 updated = True
             if updated:
                 updates += 1
