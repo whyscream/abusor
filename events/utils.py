@@ -5,8 +5,8 @@ import GeoIP
 from dns.exception import DNSException
 
 # default install paths on ubuntu
-GEOIP_IPV4_COUNTRY_DATABASE = '/var/lib/GeoIP/GeoIP.dat'
-GEOIP_IPV6_COUNTRY_DATABASE = '/var/lib/GeoIP/GeoIPv6.dat'
+GEOIP_IPV4_COUNTRY_DATABASE = '/usr/share/GeoIP/GeoIP.dat'
+GEOIP_IPV6_COUNTRY_DATABASE = '/usr/share/GeoIP/GeoIPv6.dat'
 
 logger = logging.getLogger(__name__)
 
