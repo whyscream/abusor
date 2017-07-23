@@ -14,22 +14,18 @@ LAST_WEEK = NOW - timedelta(days=7)
 pytestmark = pytest.mark.django_db
 
 
-def test_case_str_formatting(fake):
+def test_case_str_formatting(ipv4_case, ipv6_case):
     """Verify default formatting of a Case when cast to string."""
-    ipv4 = fake.ipv4()
-    case = Case(ip_network=ipv4)
-    result = str(case)
-    assert ipv4 in result
+    result = str(ipv4_case)
+    assert ipv4_case.ip_network.compressed in result
     assert timezone.now().strftime("%Y-%m-%d") in result
 
-    ipv6 = fake.ipv6()
-    case.ip_network = ipv6
-    result = str(case)
-    assert ipv6 in result
+    result = str(ipv6_case)
+    assert ipv6_case.ip_network.compressed in result
 
-    case.subject = 'foo bar'
-    result = str(case)
-    assert "foo bar (" + ipv6 + ")" == result
+    ipv4_case.subject = 'foo bar'
+    result = str(ipv4_case)
+    assert "foo bar (" in result
 
 
 def test_event_str_formatting(fake):
