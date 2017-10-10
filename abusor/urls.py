@@ -1,15 +1,17 @@
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.generic.base import TemplateView
 from rest_framework import routers
 
 from events.views import CaseViewSet, EventViewSet
 
-router = routers.DefaultRouter()
-router.register(r'api/case', CaseViewSet)
-router.register(r'api/event', EventViewSet)
+api_router = routers.DefaultRouter()
+api_router.register(r'case', CaseViewSet)
+api_router.register(r'event', EventViewSet)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^', include(router.urls)),
+    url(r'^api/', include(api_router.urls, namespace='api')),
+    url(r'^$', TemplateView.as_view(template_name='index.html'))
 ]
