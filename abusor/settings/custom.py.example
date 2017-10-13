@@ -25,3 +25,6 @@ SECRET_KEY = ''
 
 # set a hostname that will be used
 ALLOWED_HOSTS = ['abusor.example.com']
+
+# configure sentry
+RAVEN_CONFIG = {}

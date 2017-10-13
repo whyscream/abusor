@@ -5,6 +5,7 @@ INSTALLED_APPS = INSTALLED_APPS + [
     'events',
     'rest_framework',
     'rest_framework.authtoken',
+    'raven.contrib.django.raven_compat',
 ]
 
 REST_FRAMEWORK = {

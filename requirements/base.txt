@@ -3,3 +3,4 @@ djangorestframework
 dnspython
 GeoIP
 pytz
+raven
