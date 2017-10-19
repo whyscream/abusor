@@ -42,7 +42,7 @@ $(PYENV):
 .PHONY: clean
 clean:
 	rm -f requirements/*.done
-
+	rm -f -r .cache
 
 .PHONY: realclean
 realclean: clean
