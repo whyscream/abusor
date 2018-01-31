@@ -1,4 +1,5 @@
 import ipaddress
+import logging
 
 from django.conf import settings
 from django.db import models
@@ -6,6 +7,10 @@ from django.utils import timezone
 
 from .fields import GenericIPNetworkField
 from .rules import apply_effect, check_requirement
+
+MAX_SCORE = 999.99
+
+logger = logging.getLogger(__name__)
 
 
 class Case(models.Model):
@@ -73,6 +78,9 @@ class Case(models.Model):
             scores.append(event.actual_score)
 
         self.score = round(sum(scores), 2)
+        if self.score > MAX_SCORE:
+            logger.warning('Score {:f} for case {:d} exceeds MAX_SCORE, capped'.format(self.score, self.pk))
+            self.score = MAX_SCORE
         return self.score
 
     def close(self, *args):
