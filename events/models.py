@@ -7,6 +7,8 @@ from django.utils import timezone
 from .fields import GenericIPNetworkField
 from .rules import apply_effect, check_requirement
 
+MAX_SCORE = 999.99
+
 
 class Case(models.Model):
     """A collection of related abuse related events."""
@@ -72,7 +74,7 @@ class Case(models.Model):
         for event in self.events.all():
             scores.append(event.actual_score)
 
-        self.score = round(sum(scores), 2)
+        self.score = min(round(sum(scores), 2), MAX_SCORE)
         return self.score
 
     def close(self, *args):
