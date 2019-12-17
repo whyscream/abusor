@@ -55,7 +55,7 @@ def find_country_code(ip_address):
                 GEOIP_IPV6_CACHE = GeoIP.open(GEOIP_IPV6_COUNTRY_DATABASE, GeoIP.GEOIP_STANDARD)
             country_code = GEOIP_IPV6_CACHE.country_code_by_addr_v6(ip_address.compressed)
     except GeoIP.error as err:
-        logger.warn('GeoIP lookup failed with an error: {}'.format(err))
+        logger.warning('GeoIP lookup failed with an error: {}'.format(err))
         return None
     else:
         return country_code
