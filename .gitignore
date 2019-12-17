@@ -3,7 +3,7 @@ __pycache__
 *.pyc
 
 # virtualenv
-env/
+.venv/
 requirements/*.done
 
 # deployment files

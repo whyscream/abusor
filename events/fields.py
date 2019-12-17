@@ -2,7 +2,7 @@ import ipaddress
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class GenericIPNetworkField(models.CharField):
@@ -20,7 +20,7 @@ class GenericIPNetworkField(models.CharField):
         del kwargs['max_length']
         return name, path, args, kwargs
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         """Convert input into a python IPv[4,6]Network object."""
         return self.to_python(value)
 
