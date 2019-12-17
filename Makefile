@@ -1,7 +1,7 @@
 ifdef TRAVIS
 	PYENV = ~/virtualenv/python$(TRAVIS_PYTHON_VERSION)
 else
-	PYENV = env
+	PYENV = .venv
 endif
 
 PYTHON = $(PYENV)/bin/python
@@ -36,7 +36,7 @@ endif
 
 
 $(PYENV):
-	virtualenv -p $(shell which python3) $@
+	$(shell which python3.7) -m venv $@
 
 
 .PHONY: clean
