@@ -3,8 +3,8 @@ import ipaddress
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 
-from events.models import Event
-from events.utils import find_as_number, find_country_code
+from abusor.events.models import Event
+from abusor.events.utils import find_as_number, find_country_code
 
 
 class Command(BaseCommand):

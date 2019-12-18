@@ -3,7 +3,7 @@ import ipaddress
 import pytest
 from django.core.exceptions import ValidationError
 
-from events.fields import GenericIPNetworkField
+from abusor.events.fields import GenericIPNetworkField
 
 
 def test_ipnetwork_field_to_python(fake):

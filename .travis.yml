@@ -17,8 +17,6 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libgeoip-dev
 install:
-  - pip install --upgrade pytest
   - pip install "django${DJANGO_VERSION}"
-  - make requirements/development.txt.done
 script:
   - make test

@@ -1,6 +1,6 @@
 from django.utils import timezone
 
-from events.models import Event
+from abusor.events.models import Event
 
 try:
     from django.urls import reverse

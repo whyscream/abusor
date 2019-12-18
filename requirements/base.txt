@@ -1,6 +1,0 @@
-django
-djangorestframework
-dnspython
-GeoIP
-pytz
-raven

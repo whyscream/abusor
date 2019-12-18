@@ -5,7 +5,7 @@ import factory
 import factory.fuzzy
 from django.utils import timezone
 
-from events.models import Case, Event
+from abusor.events.models import Case, Event
 
 # some convenient dates
 NOW = timezone.now()
