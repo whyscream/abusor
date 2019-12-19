@@ -1,6 +1,7 @@
 from abusor.settings.django import *  # noqa
 
 INSTALLED_APPS = INSTALLED_APPS + [
+    'abusor',
     'abusor.events',
     'rest_framework',
     'rest_framework.authtoken',
