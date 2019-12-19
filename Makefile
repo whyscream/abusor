@@ -31,6 +31,12 @@ test: develop
 	$(PYTHON) -m pip install --editable .[test]
 	$(PYTHON) -m pytest
 
+.PHONY: requirements.txt
+requirements.txt:
+	$(PYTHON) -m pip install pip-tools
+	$(VENVDIR)/bin/pip-compile --generate-hashes --output-file $@
+
+
 clean:
 	rm -rf $(VENVDIR)
 	find .  -type d -name __pycache__ -print0 | xargs --null rm -rf
