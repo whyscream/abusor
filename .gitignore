@@ -15,3 +15,6 @@ static/
 # pytest artifacts
 /.coverage
 /.pytest_cache
+
+# configuration
+/abusor/settings/custom.py
