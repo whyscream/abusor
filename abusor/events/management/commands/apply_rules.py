@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from events.models import Case
+from abusor.events.models import Case
 
 
 class Command(BaseCommand):

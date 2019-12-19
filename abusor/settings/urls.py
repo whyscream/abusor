@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.views.generic.base import TemplateView
 from rest_framework import routers
 
-from events.views import CaseViewSet, EventViewSet
+from abusor.events.views import CaseViewSet, EventViewSet
 
 api = routers.DefaultRouter()
 api.register(r'case', CaseViewSet)

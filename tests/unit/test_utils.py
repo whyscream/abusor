@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 
 import GeoIP
 
-from events.utils import find_as_number, find_country_code
+from abusor.events.utils import find_as_number, find_country_code
 
 # a mocked geoip database object for use in tests
 mock_geoip = Mock(spec=GeoIP.GeoIP)
@@ -11,7 +11,7 @@ mock_geoip.country_code_by_addr = Mock(return_value='NL')
 mock_geoip.country_code_by_addr_v6 = Mock(return_value='BE')
 
 
-@patch('events.utils.dns_lookup')
+@patch('abusor.events.utils.dns_lookup')
 def test_find_as_number_ipv4(patched):
     """Verify that we can extract a correct AS number."""
     patched.return_value = ['"13335 | 104.16.0.0/12 | US | arin | 2014-03-28"']
@@ -23,7 +23,7 @@ def test_find_as_number_ipv4(patched):
     patched.assert_called_with('4.3.2.1.origin.asn.cymru.com.', 'TXT')
 
 
-@patch('events.utils.dns_lookup')
+@patch('abusor.events.utils.dns_lookup')
 def test_find_as_number_ipv6(patched):
     """Verify that we can extract a correct AS number."""
     patched.return_value = ['"3265 | 2001:980::/29 | NL | ripencc | 2002-10-25"']
@@ -36,7 +36,7 @@ def test_find_as_number_ipv6(patched):
         '1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.origin6.asn.cymru.com.', 'TXT')
 
 
-@patch('events.utils.dns_lookup')
+@patch('abusor.events.utils.dns_lookup')
 def test_find_as_number_no_result(patched, fake):
     """Verify that we can handle an empty result froma dns lookup."""
     patched.return_value = []
@@ -46,7 +46,7 @@ def test_find_as_number_no_result(patched, fake):
     assert as_number is None
 
 
-@patch('events.utils.dns_lookup')
+@patch('abusor.events.utils.dns_lookup')
 def test_find_as_number_multiple(patched, fake):
     """Verify that we can handle a result with multiple AS numbers."""
     patched.return_value = ['"123 456 | 104.16.0.0/12 | US | arin | 2014-03-28"']

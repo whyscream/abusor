@@ -1,49 +1,43 @@
 ifdef TRAVIS
-	PYENV = ~/virtualenv/python$(TRAVIS_PYTHON_VERSION)
+	VENVDIR = ~/virtualenv/python$(TRAVIS_PYTHON_VERSION)
 else
-	PYENV = .venv
+	VENVDIR = .venv
 endif
 
-PYTHON = $(PYENV)/bin/python
+PYTHON_VERSION := 3.7
+
+PYTHON = $(VENVDIR)/bin/python
 
 
-.PHONY: runserver
-runserver: requirements/base.txt.done
-	$(PYTHON) manage.py runserver
+$(VENVDIR):
+	$(shell which python$(PYTHON_VERSION)) -m venv $@
+	$(PYTHON) -m pip install --upgrade pip setuptools
+
+
+.PHONY: develop
+develop: abusor.egg-info  # alias
+abusor.egg-info: $(VENVDIR)
+	$(PYTHON) -m pip install --editable .
+
+
+.PHONY: run
+run: develop
+	$(PYTHON) -m abusor.manage migrate
+	$(PYTHON) -m abusor.manage runserver
 
 
 .PHONY: test
-test: requirements/development.txt.done
-	$(PYENV)/bin/pytest
+test: develop
+	$(PYTHON) -m pip install --editable .[test]
+	$(PYTHON) -m pytest
+
+.PHONY: requirements.txt
+requirements.txt:
+	$(PYTHON) -m pip install pip-tools
+	$(VENVDIR)/bin/pip-compile --generate-hashes --output-file $@
 
 
-requirements/development.txt.done: $(PYENV) requirements/development.txt
-ifeq ($(PIP_UPGRADE),no)
-	$(PYTHON) -m pip install -r requirements/development.txt
-else
-	$(PYTHON) -m pip install --upgrade -r requirements/development.txt
-endif
-	touch $@
-
-
-requirements/base.txt.done: $(PYENV) requirements/base.txt
-ifeq ($(PIP_UPGRADE),no)
-	$(PYTHON) -m pip install -r requirements/base.txt
-else
-	$(PYTHON) -m pip install --upgrade -r requirements/base.txt
-endif
-	touch $@
-
-
-$(PYENV):
-	$(shell which python3.7) -m venv $@
-
-
-.PHONY: clean
 clean:
-	rm -f requirements/*.done
-	rm -f -r .cache
-
-.PHONY: realclean
-realclean: clean
-	rm -rf $(PYENV)
+	rm -rf $(VENVDIR)
+	find .  -type d -name __pycache__ -print0 | xargs --null rm -rf
+	rm -rf abusor.egg-info

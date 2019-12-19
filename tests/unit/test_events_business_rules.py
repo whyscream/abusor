@@ -3,7 +3,7 @@ from random import randint
 
 import pytest
 
-from events.models import Case, Event
+from abusor.events.models import Case, Event
 
 pytestmark = pytest.mark.django_db
 

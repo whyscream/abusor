@@ -4,7 +4,7 @@ from datetime import timedelta
 import pytest
 from django.utils import timezone
 
-from events.models import Case, Event
+from abusor.events.models import Case, Event
 
 # some dates
 NOW = timezone.now()
