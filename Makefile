@@ -26,6 +26,12 @@ run: develop
 	$(PYTHON) -m manage runserver
 
 
+.PHONY: run-uwsgi
+run-uwsgi: develop
+	$(PYTHON) -m pip install uwsgi
+	$(VENVDIR)/bin/uwsgi --virtualenv=$(VENVDIR) --module=abusor.wsgi:application --check-static=$(PWD) --http :8000
+
+
 .PHONY: test
 test: develop
 	$(PYTHON) -m pip install --editable .[test]
