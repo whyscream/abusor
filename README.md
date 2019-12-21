@@ -61,3 +61,15 @@ simple commandline client is available in the `client` directory, which works
 without external dependencies: no virtualenvs or other packages needed, only
 python 3.4 (or higher). It's also possible to manage Events and Cases 
 manually through the API frontend, or through the admin interface. 
+
+## TODO
+
+A random list of things that I want to improve / features I want to add.
+
+- [ ] Get rid of cron jobs for management commands, use django-rq for event based data processing.
+- [ ] Move client to a separate repo.
+- [ ] Better queries for administrative interface.
+- [ ] Some statistics (maybe public).
+- [ ] Publishable data (f.i. a dnsbl).
+- [ ] Remove custom settings file, use env var based setup (django-configurations?).
+- [ ] Define rules in admin interface.
