@@ -3,7 +3,7 @@ import json
 import pytest
 import responses
 
-from client.abusor_api_client import parse_arguments, post_to_api
+from abusor.client.abusor_api_client import parse_arguments, post_to_api
 
 try:
     from django.urls import reverse

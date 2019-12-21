@@ -3,6 +3,7 @@ from abusor.settings.django import *  # noqa
 INSTALLED_APPS = INSTALLED_APPS + [
     'abusor',
     'abusor.events',
+    'abusor.frontend',
     'rest_framework',
     'rest_framework.authtoken',
     'raven.contrib.django.raven_compat',
