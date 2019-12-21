@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import ipaddress
 
 from django.db import migrations
-import events.fields
+import abusor.events.fields
 
 
 def move_ipnetwork_data(apps, schema_editor):
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='case',
             name='ip_network',
-            field=events.fields.GenericIPNetworkField(default='0.0.0.0/0'),
+            field=abusor.events.fields.GenericIPNetworkField(default='0.0.0.0/0'),
             preserve_default=False,
         ),
         migrations.RunPython(move_ipnetwork_data),

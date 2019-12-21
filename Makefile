@@ -22,8 +22,8 @@ abusor.egg-info: $(VENVDIR)
 
 .PHONY: run
 run: develop
-	$(PYTHON) -m abusor.manage migrate
-	$(PYTHON) -m abusor.manage runserver
+	$(PYTHON) -m manage migrate
+	$(PYTHON) -m manage runserver
 
 
 .PHONY: test

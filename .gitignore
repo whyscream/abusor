@@ -1,20 +1,10 @@
-# python artifacts
-__pycache__
-*.pyc
-
-# virtualenv
+# development files
 /.venv/
 /abusor.egg-info/
+/db.sqlite3
 
-# deployment files
-static/
+# python artifacts
+__pycache__
 
-# test database
-/abusor/*.sqlite3
-
-# pytest artifacts
-/.coverage
-/.pytest_cache
-
-# configuration
+# deployment
 /abusor/settings/custom.py
