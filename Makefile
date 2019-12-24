@@ -29,7 +29,8 @@ run: develop
 .PHONY: run-uwsgi
 run-uwsgi: develop
 	$(PYTHON) -m pip install uwsgi
-	$(VENVDIR)/bin/uwsgi --virtualenv=$(VENVDIR) --module=abusor.wsgi:application --check-static=$(PWD) --http :8000
+	DJANGO_SECRET_KEY=secret \
+		$(VENVDIR)/bin/uwsgi --virtualenv=$(VENVDIR) --module=abusor.wsgi:application --check-static=$(PWD) --http :8000
 
 
 .PHONY: test
