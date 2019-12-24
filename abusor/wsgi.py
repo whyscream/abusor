@@ -9,8 +9,10 @@ https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 
 import os
 
-from django.core.wsgi import get_wsgi_application
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abusor.settings')
+os.environ.setdefault('DJANGO_CONFIGURATION', 'Main')
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abusor.settings.main')
+# This should be imported after setting DJANGO_CONFIGURATION.
+from configurations.wsgi import get_wsgi_application  # isort:skip
 
 application = get_wsgi_application()
