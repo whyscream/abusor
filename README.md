@@ -71,5 +71,5 @@ A random list of things that I want to improve / features I want to add.
 - [ ] Better queries for administrative interface.
 - [ ] Some statistics (maybe public).
 - [ ] Publishable data (f.i. a dnsbl).
-- [ ] Remove custom settings file, use env var based setup (django-configurations?).
+- [x] Remove custom settings file, use env var based setup (django-configurations?).
 - [ ] Define rules in admin interface.
