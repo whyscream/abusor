@@ -12,6 +12,7 @@ import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abusor.settings')
 os.environ.setdefault('DJANGO_CONFIGURATION', 'Main')
 
-from configurations.wsgi import get_wsgi_application
+# This should be imported after setting DJANGO_CONFIGURATION.
+from configurations.wsgi import get_wsgi_application  # isort:skip
 
 application = get_wsgi_application()

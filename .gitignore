@@ -6,6 +6,10 @@
 # python artifacts
 __pycache__
 
+# test artifacts
+/.pytest_cache/
+/.coverage
+
 # deployment
 /abusor/settings/custom.py
 /static/

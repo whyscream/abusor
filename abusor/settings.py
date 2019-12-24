@@ -1,6 +1,6 @@
 import os.path
-from configurations import Configuration, values
 
+from configurations import Configuration, values
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
