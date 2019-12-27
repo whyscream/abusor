@@ -20,6 +20,7 @@ class Base(Configuration):
         "django.contrib.staticfiles",
         "abusor.events",
         "abusor.frontend",
+        "abusor.rules",
         "rest_framework",
         "rest_framework.authtoken",
         "raven.contrib.django.raven_compat",
