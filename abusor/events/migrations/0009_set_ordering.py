@@ -7,17 +7,11 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('events', '0008_add_country_code'),
-    ]
+    dependencies = [("events", "0008_add_country_code")]
 
     operations = [
         migrations.AlterModelOptions(
-            name='case',
-            options={'ordering': ('start_date',)},
+            name="case", options={"ordering": ("start_date",)}
         ),
-        migrations.AlterModelOptions(
-            name='event',
-            options={'ordering': ('date',)},
-        ),
+        migrations.AlterModelOptions(name="event", options={"ordering": ("date",)}),
     ]

@@ -20,15 +20,13 @@ def _set(obj, attr, value):
     setattr(obj, attr, value)
     return True
 
+
 # A list of rule requirement operations
 REQUIREMENT_MAP = {
-    'above': lambda subject, value: float(subject) > float(value),
-    'below': lambda subject, value: float(subject) < float(value),
-    'contains': lambda subject, search: search.lower() in subject.lower(),
+    "above": lambda subject, value: float(subject) > float(value),
+    "below": lambda subject, value: float(subject) < float(value),
+    "contains": lambda subject, search: search.lower() in subject.lower(),
 }
 
 # A list of rule effect appliers
-APPLY_MAP = {
-    'call': lambda obj, attr, value: getattr(obj, attr)(value),
-    'set': _set,
-}
+APPLY_MAP = {"call": lambda obj, attr, value: getattr(obj, attr)(value), "set": _set}

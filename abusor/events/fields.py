@@ -11,13 +11,13 @@ class GenericIPNetworkField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         """Create new field, set max_length for ip networks."""
-        kwargs['max_length'] = 49
+        kwargs["max_length"] = 49
         super().__init__(*args, **kwargs)
 
     def deconstruct(self):
         """Deconstruct the field, remove max length value."""
         name, path, args, kwargs = super().deconstruct()
-        del kwargs['max_length']
+        del kwargs["max_length"]
         return name, path, args, kwargs
 
     def from_db_value(self, value, expression, connection):

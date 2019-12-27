@@ -7,19 +7,17 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('events', '0007_add_as_number'),
-    ]
+    dependencies = [("events", "0007_add_as_number")]
 
     operations = [
         migrations.AddField(
-            model_name='case',
-            name='country_code',
+            model_name="case",
+            name="country_code",
             field=models.CharField(blank=True, max_length=2),
         ),
         migrations.AddField(
-            model_name='event',
-            name='country_code',
+            model_name="event",
+            name="country_code",
             field=models.CharField(blank=True, max_length=2),
         ),
     ]
