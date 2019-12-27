@@ -33,7 +33,7 @@ def test_find_as_number_ipv6(patched):
     assert as_number == 3265
 
     patched.assert_called_with(
-        "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.origin6.asn.cymru.com.",
+        "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.origin6.asn.cymru.com.",  # noqa: E501
         "TXT",
     )
 

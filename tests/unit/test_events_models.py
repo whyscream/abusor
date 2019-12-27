@@ -56,7 +56,7 @@ def test_event_find_related_case_none(event, case_factory, fake):
 
 
 def test_event_find_related_case_newest(event, case_factory):
-    """Verify that we always find the newest Case when multiple results are available."""
+    """Verify that we find the newest Case when more results are available."""
     event_network = ipaddress.ip_network(event.ip_address)
     newest_case = case_factory(ip_network=event_network, start_date=NOW)
     case_factory(ip_network=event_network, start_date=YESTERDAY)
@@ -66,7 +66,7 @@ def test_event_find_related_case_newest(event, case_factory):
 
 
 def test_event_find_related_case_opened(event, case_factory):
-    """Verify that when both open and closed Cases apply to an Event, the opened one is found."""
+    """Verify that we find an Case apply to an Event, also when there are others."""
     event_network = ipaddress.ip_network(event.ip_address)
     open_case = case_factory(
         ip_network=event_network, start_date=LAST_WEEK, end_date=None

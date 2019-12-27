@@ -14,9 +14,8 @@ class RangeListFilter(admin.SimpleListFilter):
         super().__init__(request, params, model, model_admin)
         if self.boundaries is None or len(self.boundaries) < 2:
             raise ValueError(
-                "The range filter '{}' does not specify at least 2 items in 'boundaries'.".format(
-                    self.__class__.__name__
-                )
+                "The range filter '{}' does not specify at least "
+                "2 items in 'boundaries'.".format(self.__class__.__name__)
             )
         if self.filter_on is None:
             self.filter_on = self.parameter_name
