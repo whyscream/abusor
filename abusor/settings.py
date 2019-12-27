@@ -16,7 +16,6 @@ class Base(Configuration):
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
-        'abusor',
         'abusor.events',
         'abusor.frontend',
         'rest_framework',
