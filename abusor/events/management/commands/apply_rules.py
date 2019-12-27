@@ -10,7 +10,7 @@ class Command(BaseCommand):
         """Recalculte open case scores, and apply business rules to them."""
         cases = Case.objects.filter(end_date=None)
         if not cases:
-            self.stdout.write(self.style.SUCCESS('No open cases found.'))
+            self.stdout.write(self.style.SUCCESS("No open cases found."))
             return
 
         updated_cases = 0
@@ -26,5 +26,10 @@ class Command(BaseCommand):
                     msg = "Case '{}' updated by {} rule(s)."
                 self.stdout.write(msg.format(case, applied))
 
-        self.stdout.write(self.style.SUCCESS('Processed {} cases, updated {} and closed {}.'.format(
-            cases.count(), updated_cases, closed_cases)))
+        self.stdout.write(
+            self.style.SUCCESS(
+                "Processed {} cases, updated {} and closed {}.".format(
+                    cases.count(), updated_cases, closed_cases
+                )
+            )
+        )

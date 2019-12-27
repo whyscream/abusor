@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('events', '0003_alter-datetime-fields'),
-    ]
+    dependencies = [("events", "0003_alter-datetime-fields")]
 
     operations = [
         migrations.AddField(
-            model_name='case',
-            name='score',
+            model_name="case",
+            name="score",
             field=models.DecimalField(decimal_places=2, default=0.0, max_digits=5),
-        ),
+        )
     ]

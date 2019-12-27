@@ -4,7 +4,7 @@ from django.contrib import admin
 class RangeListFilter(admin.SimpleListFilter):
     """Simple ListFilter base for filtering on numeric ranges."""
 
-    separator = '-'
+    separator = "-"
     boundaries = None
     filter_on = None
     offset = 1
@@ -13,8 +13,10 @@ class RangeListFilter(admin.SimpleListFilter):
         """Check for mandatory settings."""
         super().__init__(request, params, model, model_admin)
         if self.boundaries is None or len(self.boundaries) < 2:
-            raise ValueError("The range filter '{}' does not specify at least 2 items in 'boundaries'.".format(
-                self.__class__.__name__))
+            raise ValueError(
+                "The range filter '{}' does not specify at least "
+                "2 items in 'boundaries'.".format(self.__class__.__name__)
+            )
         if self.filter_on is None:
             self.filter_on = self.parameter_name
 
@@ -27,8 +29,8 @@ class RangeListFilter(admin.SimpleListFilter):
                 # move on to the next value
                 continue
 
-            raw = '{}{}{}'.format(start, self.separator, value)
-            formatted = '{} to {}'.format(start, value)
+            raw = "{}{}{}".format(start, self.separator, value)
+            formatted = "{} to {}".format(start, value)
             start = value + self.offset
             yield (raw, formatted)
 
@@ -38,9 +40,9 @@ class RangeListFilter(admin.SimpleListFilter):
             return queryset
         (low, high) = self.value().split(self.separator)
         if low:
-            filter_expr = '{}__gte'.format(self.filter_on)
+            filter_expr = "{}__gte".format(self.filter_on)
             queryset = queryset.filter(**{filter_expr: low})
         if high:
-            filter_expr = '{}__lte'.format(self.filter_on)
+            filter_expr = "{}__lte".format(self.filter_on)
             queryset = queryset.filter(**{filter_expr: high})
         return queryset

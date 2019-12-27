@@ -7,19 +7,17 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('events', '0006_case_ip_network'),
-    ]
+    dependencies = [("events", "0006_case_ip_network")]
 
     operations = [
         migrations.AddField(
-            model_name='case',
-            name='as_number',
+            model_name="case",
+            name="as_number",
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='event',
-            name='as_number',
+            model_name="event",
+            name="as_number",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]

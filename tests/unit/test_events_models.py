@@ -23,7 +23,7 @@ def test_case_str_formatting(ipv4_case, ipv6_case):
     result = str(ipv6_case)
     assert ipv6_case.ip_network.compressed in result
 
-    ipv4_case.subject = 'foo bar'
+    ipv4_case.subject = "foo bar"
     result = str(ipv4_case)
     assert "foo bar (" in result
 
@@ -31,7 +31,7 @@ def test_case_str_formatting(ipv4_case, ipv6_case):
 def test_event_str_formatting(fake):
     """Verify default formatting of an Event when cast to string."""
     ipv4 = fake.ipv4()
-    event = Event(ip_address=ipv4, subject='foo')
+    event = Event(ip_address=ipv4, subject="foo")
     result = str(event)
     assert "foo (" + ipv4 + ")" == result
 
@@ -56,7 +56,7 @@ def test_event_find_related_case_none(event, case_factory, fake):
 
 
 def test_event_find_related_case_newest(event, case_factory):
-    """Verify that we always find the newest Case when multiple results are available."""
+    """Verify that we find the newest Case when more results are available."""
     event_network = ipaddress.ip_network(event.ip_address)
     newest_case = case_factory(ip_network=event_network, start_date=NOW)
     case_factory(ip_network=event_network, start_date=YESTERDAY)
@@ -66,9 +66,11 @@ def test_event_find_related_case_newest(event, case_factory):
 
 
 def test_event_find_related_case_opened(event, case_factory):
-    """Verify that when both open and closed Cases apply to an Event, the opened one is found."""
+    """Verify that we find an Case apply to an Event, also when there are others."""
     event_network = ipaddress.ip_network(event.ip_address)
-    open_case = case_factory(ip_network=event_network, start_date=LAST_WEEK, end_date=None)
+    open_case = case_factory(
+        ip_network=event_network, start_date=LAST_WEEK, end_date=None
+    )
     case_factory(ip_network=event_network, start_date=YESTERDAY, end_date=YESTERDAY)
 
     result = event.find_related_case()
@@ -116,12 +118,12 @@ def test_case_recalculate_score(case, event_factory):
 
 def test_case_expand(case_factory, event_factory):
     """Verify that cases will be merged when expanding a case in the nearby network."""
-    for ip in ['192.0.2.34', '192.0.2.178', '198.51.100.17']:
+    for ip in ["192.0.2.34", "192.0.2.178", "198.51.100.17"]:
         # get some test data
         case = case_factory(ip_network=ipaddress.ip_network(ip))
         event_factory(ip_address=ip, case=case)
     # generate our subject case
-    case = case_factory(ip_network=ipaddress.ip_network('192.0.2.35'))
+    case = case_factory(ip_network=ipaddress.ip_network("192.0.2.35"))
     event_factory(ip_address=ip, case=case)
 
     open_cases = Case.objects.filter(end_date=None)
@@ -141,25 +143,25 @@ def test_case_expand(case_factory, event_factory):
     open_cases = Case.objects.filter(end_date=None)
     assert open_cases.count() == 2
 
-    assert '192.0.2.0/24' in [str(x.ip_network) for x in open_cases]
-    assert '198.51.100.17/32' in [str(x.ip_network) for x in open_cases]
+    assert "192.0.2.0/24" in [str(x.ip_network) for x in open_cases]
+    assert "198.51.100.17/32" in [str(x.ip_network) for x in open_cases]
 
     case.expand(29)
     case.save()
     case.refresh_from_db()
-    assert case.ip_network.prefixlen == 24, 'prefix length was unexpectedly decreased'
+    assert case.ip_network.prefixlen == 24, "prefix length was unexpectedly decreased"
 
 
 def test_case_expand_ipv4(case_factory, event_factory):
     """Verify that expanding a case using the wrong protocol returns False."""
     # some fixtures
-    for ip in ['192.0.2.1', '192.0.2.2']:
+    for ip in ["192.0.2.1", "192.0.2.2"]:
         case = case_factory(ip_network=ipaddress.ip_network(ip))
         event_factory(ip_address=ip, case=case)
 
     # subject case
-    case = case_factory(ip_network=ipaddress.ip_network('192.0.2.3'))
-    event_factory(ip_address='192.0.2.3', case=case)
+    case = case_factory(ip_network=ipaddress.ip_network("192.0.2.3"))
+    event_factory(ip_address="192.0.2.3", case=case)
 
     result = case.expand_ipv6(80)
     assert result is False
@@ -177,13 +179,13 @@ def test_case_expand_ipv4(case_factory, event_factory):
 def test_case_expand_ipv6(case_factory, event_factory):
     """Verify that expanding a case using the wrong protocol returns False."""
     # some fixtures
-    for ip in ['2001:db8::1', '2001:db8::2']:
+    for ip in ["2001:db8::1", "2001:db8::2"]:
         case = case_factory(_ip_address=ip)
         event_factory(ip_address=ip, case=case)
 
     # subject case
-    case = case_factory(ip_network=ipaddress.ip_network('2001:db8::3'))
-    event_factory(ip_address='2001:db8::3', case=case)
+    case = case_factory(ip_network=ipaddress.ip_network("2001:db8::3"))
+    event_factory(ip_address="2001:db8::3", case=case)
 
     result = case.expand_ipv4(29)
     assert result is False

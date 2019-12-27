@@ -17,7 +17,7 @@ class Case(models.Model):
     """A collection of related abuse related events."""
 
     class Meta:
-        ordering = ('start_date', )
+        ordering = ("start_date",)
 
     ip_network = GenericIPNetworkField(blank=False)
     as_number = models.IntegerField(blank=True, null=True)
@@ -39,7 +39,7 @@ class Case(models.Model):
             # netmask too low, don't do anything
             return
         # set the new ip_network
-        ip_network_str = '{}/{}'.format(self.ip_network.network_address, netmask)
+        ip_network_str = "{}/{}".format(self.ip_network.network_address, netmask)
         self.ip_network = ipaddress.ip_network(ip_network_str, strict=False)
 
         # find open cases in the new network, and merge them in.
@@ -79,7 +79,11 @@ class Case(models.Model):
 
         self.score = round(sum(scores), 2)
         if self.score > MAX_SCORE:
-            logger.warning('Score {:f} for case {:d} exceeds MAX_SCORE, capped'.format(self.score, self.pk))
+            logger.warning(
+                "Score {:f} for case {:d} exceeds MAX_SCORE, capped".format(
+                    self.score, self.pk
+                )
+            )
             self.score = MAX_SCORE
         return self.score
 
@@ -100,9 +104,9 @@ class Case(models.Model):
 
         applied = 0
         for rule in settings.ABUSOR_CASE_RULES:
-            require_result = check_requirement(self, rule['when'])
+            require_result = check_requirement(self, rule["when"])
             if require_result:
-                effect_result = apply_effect(self, rule['then'])
+                effect_result = apply_effect(self, rule["then"])
                 if effect_result:
                     applied += 1
         self.save()
@@ -113,15 +117,15 @@ class Event(models.Model):
     """An abuse related event."""
 
     class Meta:
-        ordering = ('date', )
+        ordering = ("date",)
 
-    LOGIN = 'login'
-    MALWARE = 'malware'
-    SPAM = 'spam'
+    LOGIN = "login"
+    MALWARE = "malware"
+    SPAM = "spam"
     CATEGORY_CHOICES = (
-        (LOGIN, 'Attempts to gain unauthorized access'),
-        (MALWARE, 'Attempts to exploit software bugs'),
-        (SPAM, 'Unsolicited bulk email sending')
+        (LOGIN, "Attempts to gain unauthorized access"),
+        (MALWARE, "Attempts to exploit software bugs"),
+        (SPAM, "Unsolicited bulk email sending"),
     )
 
     ip_address = models.GenericIPAddressField()
@@ -132,7 +136,9 @@ class Event(models.Model):
     description = models.TextField(blank=True)
     score = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, blank=True)
-    case = models.ForeignKey('Case', models.SET_NULL, blank=True, null=True, related_name='events')
+    case = models.ForeignKey(
+        "Case", models.SET_NULL, blank=True, null=True, related_name="events"
+    )
     report_date = models.DateTimeField(default=timezone.now)
     external_reference = models.CharField(max_length=128, blank=True)
 
@@ -140,7 +146,7 @@ class Event(models.Model):
     def actual_score(self):
         """Calculate the current score based on the original score and the age."""
         diff = timezone.now() - self.date
-        score = float(self.score) * settings.ABUSOR_SCORE_DECAY**diff.days
+        score = float(self.score) * settings.ABUSOR_SCORE_DECAY ** diff.days
         return round(score, 2)
 
     def __str__(self):
@@ -150,7 +156,7 @@ class Event(models.Model):
     def find_related_case(self):
         """Find a case related to this event."""
         event_network = ipaddress.ip_network(self.ip_address)
-        for case in Case.objects.filter(end_date=None).order_by('-start_date'):
+        for case in Case.objects.filter(end_date=None).order_by("-start_date"):
             if case.ip_network.overlaps(event_network):
                 return case
 
@@ -160,20 +166,20 @@ class Event(models.Model):
             case = self.find_related_case()
             if not case:
                 create_data = {
-                    'ip_network': ipaddress.ip_network(self.ip_address),
-                    'as_number': self.as_number,
-                    'country_code': self.country_code,
-                    'subject': self.subject,
-                    'start_date': self.report_date,
+                    "ip_network": ipaddress.ip_network(self.ip_address),
+                    "as_number": self.as_number,
+                    "country_code": self.country_code,
+                    "subject": self.subject,
+                    "start_date": self.report_date,
                 }
                 case = Case.objects.create(**create_data)
             self.case = case
 
         applied = 0
         for rule in settings.ABUSOR_EVENT_RULES:
-            require_result = check_requirement(self, rule['when'])
+            require_result = check_requirement(self, rule["when"])
             if require_result:
-                effect_result = apply_effect(self, rule['then'])
+                effect_result = apply_effect(self, rule["then"])
                 if effect_result:
                     applied += 1
         self.save()

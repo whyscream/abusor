@@ -1,7 +1,7 @@
 # development files
 /.venv/
 /abusor.egg-info/
-/db.sqlite3
+/db.sqlite
 
 # python artifacts
 __pycache__

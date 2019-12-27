@@ -9,29 +9,31 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('events', '0002_allow-empty-fields'),
-    ]
+    dependencies = [("events", "0002_allow-empty-fields")]
 
     operations = [
         migrations.AlterField(
-            model_name='case',
-            name='end_date',
-            field=models.DateTimeField(null=True),
+            model_name="case", name="end_date", field=models.DateTimeField(null=True)
         ),
         migrations.AlterField(
-            model_name='case',
-            name='start_date',
+            model_name="case",
+            name="start_date",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='event',
-            name='case',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='events', to='events.Case'),
+            model_name="event",
+            name="case",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="events",
+                to="events.Case",
+            ),
         ),
         migrations.AlterField(
-            model_name='event',
-            name='report_date',
+            model_name="event",
+            name="report_date",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
     ]

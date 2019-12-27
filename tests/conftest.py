@@ -21,6 +21,7 @@ def apiclient():
     skip_if_no_django()
 
     from rest_framework.test import APIClient  # noqa
+
     return APIClient()
 
 

@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('events', '0004_case_score'),
-    ]
+    dependencies = [("events", "0004_case_score")]
 
     operations = [
         migrations.AddField(
-            model_name='case',
-            name='netmask',
+            model_name="case",
+            name="netmask",
             field=models.CharField(blank=True, max_length=3),
-        ),
+        )
     ]
