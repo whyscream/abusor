@@ -30,9 +30,7 @@ class Case(models.Model):
     score = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal("0"))
 
     def __str__(self):
-        """Default string representation."""
-        detail = self.subject if self.subject else self.start_date.isoformat()
-        return "{} ({})".format(detail, self.ip_network)
+        return f"<Case {self.pk}>"
 
     def expand(self, netmask):
         """Expand the case to the given netmask."""
@@ -151,8 +149,7 @@ class Event(models.Model):
         return round(score, 2)
 
     def __str__(self):
-        """Default string representation."""
-        return "{} ({})".format(self.subject, self.ip_address)
+        return f"<Event {self.pk}>"
 
     def find_related_case(self):
         """Find a case related to this event."""

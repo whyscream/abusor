@@ -4,7 +4,7 @@ from datetime import timedelta
 import pytest
 from django.utils import timezone
 
-from abusor.events.models import Case, Event
+from abusor.events.models import Case
 
 # some dates
 NOW = timezone.now()
@@ -12,33 +12,6 @@ YESTERDAY = NOW - timedelta(days=1)
 LAST_WEEK = NOW - timedelta(days=7)
 
 pytestmark = pytest.mark.django_db
-
-
-def test_case_str_formatting(ipv4_case, ipv6_case):
-    """Verify default formatting of a Case when cast to string."""
-    result = str(ipv4_case)
-    assert ipv4_case.ip_network.compressed in result
-    assert timezone.now().strftime("%Y-%m-%d") in result
-
-    result = str(ipv6_case)
-    assert ipv6_case.ip_network.compressed in result
-
-    ipv4_case.subject = "foo bar"
-    result = str(ipv4_case)
-    assert "foo bar (" in result
-
-
-def test_event_str_formatting(fake):
-    """Verify default formatting of an Event when cast to string."""
-    ipv4 = fake.ipv4()
-    event = Event(ip_address=ipv4, subject="foo")
-    result = str(event)
-    assert "foo (" + ipv4 + ")" == result
-
-    ipv6 = fake.ipv6()
-    event.ip_address = ipv6
-    result = str(event)
-    assert "foo (" + ipv6 + ")" == result
 
 
 def test_event_find_related_case(event, case_factory):
