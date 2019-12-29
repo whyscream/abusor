@@ -1,5 +1,6 @@
 import ipaddress
 import logging
+from decimal import Decimal
 
 from django.conf import settings
 from django.db import models
@@ -26,7 +27,7 @@ class Case(models.Model):
     end_date = models.DateTimeField(null=True)
     subject = models.CharField(max_length=128, blank=True)
     description = models.TextField(blank=True)
-    score = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    score = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal("0"))
 
     def __str__(self):
         """Default string representation."""
@@ -134,7 +135,7 @@ class Event(models.Model):
     date = models.DateTimeField()
     subject = models.CharField(max_length=128)
     description = models.TextField(blank=True)
-    score = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    score = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal("0"))
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, blank=True)
     case = models.ForeignKey(
         "Case", models.SET_NULL, blank=True, null=True, related_name="events"
