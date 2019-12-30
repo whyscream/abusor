@@ -10,7 +10,13 @@ class PluginMount(type):
             logger.info(f"Initialized plugin registry for {name}.")
             cls.plugins = []
         else:
-            logger.info(f"Registered plugin {name}.")
+            # find out plugin parent
+            parent = None
+            for klass in bases:
+                if klass.__module__ == "abusor.rules.plugins":
+                    parent = klass.__name__
+                    break
+            logger.info(f"Registered plugin {name} to {parent}.")
             cls.plugins.append(cls)
 
 
