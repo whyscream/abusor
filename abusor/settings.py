@@ -4,6 +4,8 @@ import sentry_sdk
 from configurations import Configuration, values
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from .version import VERSION
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -114,6 +116,7 @@ class Main(Base):
             dsn=cls.SENTRY_DSN,
             integrations=[DjangoIntegration()],
             send_default_pii=True,
+            release=VERSION,
         )
 
     ABUSOR_SCORE_DECAY = values.FloatValue(0.9, environ_prefix="")
