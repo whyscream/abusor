@@ -7,7 +7,6 @@ from django.db import models
 from django.utils import timezone
 
 from .fields import GenericIPNetworkField
-from .rules import apply_effect, check_requirement
 
 MAX_SCORE = 999.99
 
@@ -92,25 +91,6 @@ class Case(models.Model):
         self.end_date = timezone.now()
         return True
 
-    def apply_business_rules(self):
-        """
-        Apply business rules on the case.
-
-        TODO: return the number applied effects, not the number of triggered rules
-        Returns the number of triggered rules.
-        """
-        self.recalculate_score()
-
-        applied = 0
-        for rule in settings.ABUSOR_CASE_RULES:
-            require_result = check_requirement(self, rule["when"])
-            if require_result:
-                effect_result = apply_effect(self, rule["then"])
-                if effect_result:
-                    applied += 1
-        self.save()
-        return applied
-
 
 class Event(models.Model):
     """An abuse related event."""
@@ -158,27 +138,17 @@ class Event(models.Model):
             if case.ip_network.overlaps(event_network):
                 return case
 
-    def apply_business_rules(self):
-        """Find applicable business rules and apply them to the Event."""
+    def get_or_create_case(self):
         if not self.case:
             case = self.find_related_case()
             if not case:
-                create_data = {
-                    "ip_network": ipaddress.ip_network(self.ip_address),
-                    "as_number": self.as_number,
-                    "country_code": self.country_code,
-                    "subject": self.subject,
-                    "start_date": self.report_date,
-                }
-                case = Case.objects.create(**create_data)
+                case = Case.objects.create(
+                    ip_network=ipaddress.ip_network(self.ip_address),
+                    as_number=self.as_number,
+                    country_code=self.country_code,
+                    subject=self.subject,
+                    start_date=self.report_date,
+                )
             self.case = case
-
-        applied = 0
-        for rule in settings.ABUSOR_EVENT_RULES:
-            require_result = check_requirement(self, rule["when"])
-            if require_result:
-                effect_result = apply_effect(self, rule["then"])
-                if effect_result:
-                    applied += 1
-        self.save()
-        return applied
+            self.save()
+        return self.case

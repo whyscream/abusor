@@ -171,3 +171,20 @@ def test_case_expand_ipv6(case_factory, event_factory):
     open_cases = Case.objects.filter(end_date=None)
     assert open_cases.count() == 1
     assert case.events.count() == 3
+
+
+def test_new_event_finds_existing_case(event, case_factory):
+    """Cerify that an open Case is connected to a new event when applicable."""
+    case = case_factory(ip_network=ipaddress.ip_network(event.ip_address))
+    assert event.case is None
+    event.get_or_create_case()
+    assert event.case == case
+    assert (
+        Case.objects.last() == case
+    ), "A new case was created when it was not expected"
+
+
+def test_new_event_creates_new_case(event):
+    assert event.case is None
+    event.get_or_create_case()
+    assert event.case is not None
