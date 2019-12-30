@@ -116,7 +116,7 @@ class Main(Base):
             send_default_pii=True,
         )
 
-    ABUSOR_SCORE_DECAY = values.FloatValue(0.9)
+    ABUSOR_SCORE_DECAY = values.FloatValue(0.9, environ_prefix="")
 
 
 class Test(Main):
