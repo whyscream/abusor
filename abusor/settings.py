@@ -50,6 +50,30 @@ class Base(Configuration):
             },
         }
     ]
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "console": {"format": "%(asctime)s %(name)s %(levelname)s %(message)s"}
+        },
+        "handlers": {
+            "console": {"class": "logging.StreamHandler", "formatter": "console"},
+            "sentry": {
+                "level": "ERROR",
+                "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
+            },
+        },
+        "loggers": {
+            "abusor": {
+                "level": values.Value("INFO", environ_name="LOG_LEVEL"),
+                "handlers": ["console", "sentry"],
+            },
+            "django": {
+                "level": values.Value("INFO", environ_name="LOG_LEVEL"),
+                "handlers": ["console", "sentry"],
+            },
+        },
+    }
     WSGI_APPLICATION = "abusor.wsgi.application"
     _SQLITE_DB_PATH = os.path.join(BASE_DIR, "db.sqlite")
     DATABASES = values.DatabaseURLValue(f"sqlite:///{_SQLITE_DB_PATH}")
@@ -91,3 +115,4 @@ class Test(Main):
     """Specific settngs for test runs."""
 
     SECRET_KEY = "secret"
+    DEBUG = True
