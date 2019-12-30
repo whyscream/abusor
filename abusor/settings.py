@@ -85,8 +85,6 @@ class Main(Base):
     }
 
     ABUSOR_SCORE_DECAY = values.FloatValue(0.9)
-    ABUSOR_EVENT_RULES = []
-    ABUSOR_CASE_RULES = []
 
 
 class Test(Main):
