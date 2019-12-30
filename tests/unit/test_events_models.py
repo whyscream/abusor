@@ -4,7 +4,7 @@ from datetime import timedelta
 import pytest
 from django.utils import timezone
 
-from abusor.events.models import Case, Event
+from abusor.events.models import Case
 
 # some dates
 NOW = timezone.now()
@@ -12,33 +12,6 @@ YESTERDAY = NOW - timedelta(days=1)
 LAST_WEEK = NOW - timedelta(days=7)
 
 pytestmark = pytest.mark.django_db
-
-
-def test_case_str_formatting(ipv4_case, ipv6_case):
-    """Verify default formatting of a Case when cast to string."""
-    result = str(ipv4_case)
-    assert ipv4_case.ip_network.compressed in result
-    assert timezone.now().strftime("%Y-%m-%d") in result
-
-    result = str(ipv6_case)
-    assert ipv6_case.ip_network.compressed in result
-
-    ipv4_case.subject = "foo bar"
-    result = str(ipv4_case)
-    assert "foo bar (" in result
-
-
-def test_event_str_formatting(fake):
-    """Verify default formatting of an Event when cast to string."""
-    ipv4 = fake.ipv4()
-    event = Event(ip_address=ipv4, subject="foo")
-    result = str(event)
-    assert "foo (" + ipv4 + ")" == result
-
-    ipv6 = fake.ipv6()
-    event.ip_address = ipv6
-    result = str(event)
-    assert "foo (" + ipv6 + ")" == result
 
 
 def test_event_find_related_case(event, case_factory):
@@ -116,7 +89,7 @@ def test_case_recalculate_score(case, event_factory):
     assert score is None
 
 
-def test_case_expand(case_factory, event_factory):
+def test_case_expand_network_prefix_ipv4(case_factory, event_factory):
     """Verify that cases will be merged when expanding a case in the nearby network."""
     for ip in ["192.0.2.34", "192.0.2.178", "198.51.100.17"]:
         # get some test data
@@ -129,14 +102,14 @@ def test_case_expand(case_factory, event_factory):
     open_cases = Case.objects.filter(end_date=None)
     assert open_cases.count() == 4
 
-    case.expand(29)
+    case.expand_network_prefix(29)
     case.save()
     case.refresh_from_db()
     assert case.events.count() == 2
     open_cases = Case.objects.filter(end_date=None)
     assert open_cases.count() == 3
 
-    case.expand(24)
+    case.expand_network_prefix(24)
     case.save()
     case.refresh_from_db()
     assert case.events.count() == 3
@@ -146,38 +119,14 @@ def test_case_expand(case_factory, event_factory):
     assert "192.0.2.0/24" in [str(x.ip_network) for x in open_cases]
     assert "198.51.100.17/32" in [str(x.ip_network) for x in open_cases]
 
-    case.expand(29)
+    case.expand_network_prefix(29)
     case.save()
     case.refresh_from_db()
     assert case.ip_network.prefixlen == 24, "prefix length was unexpectedly decreased"
 
 
-def test_case_expand_ipv4(case_factory, event_factory):
-    """Verify that expanding a case using the wrong protocol returns False."""
-    # some fixtures
-    for ip in ["192.0.2.1", "192.0.2.2"]:
-        case = case_factory(ip_network=ipaddress.ip_network(ip))
-        event_factory(ip_address=ip, case=case)
-
-    # subject case
-    case = case_factory(ip_network=ipaddress.ip_network("192.0.2.3"))
-    event_factory(ip_address="192.0.2.3", case=case)
-
-    result = case.expand_ipv6(80)
-    assert result is False
-    open_cases = Case.objects.filter(end_date=None)
-    assert open_cases.count() == 3
-    assert case.events.count() == 1
-
-    result = case.expand_ipv4(29)
-    assert result is True
-    open_cases = Case.objects.filter(end_date=None)
-    assert open_cases.count() == 1
-    assert case.events.count() == 3
-
-
-def test_case_expand_ipv6(case_factory, event_factory):
-    """Verify that expanding a case using the wrong protocol returns False."""
+def test_case_expand_network_prefix_ipv6(case_factory, event_factory):
+    """Verify that we can expand an ipv6 case."""
     # some fixtures
     for ip in ["2001:db8::1", "2001:db8::2"]:
         case = case_factory(_ip_address=ip)
@@ -187,14 +136,25 @@ def test_case_expand_ipv6(case_factory, event_factory):
     case = case_factory(ip_network=ipaddress.ip_network("2001:db8::3"))
     event_factory(ip_address="2001:db8::3", case=case)
 
-    result = case.expand_ipv4(29)
-    assert result is False
-    open_cases = Case.objects.filter(end_date=None)
-    assert open_cases.count() == 3
-    assert case.events.count() == 1
-
-    result = case.expand_ipv6(80)
+    result = case.expand_network_prefix(80)
     assert result is True
     open_cases = Case.objects.filter(end_date=None)
     assert open_cases.count() == 1
     assert case.events.count() == 3
+
+
+def test_new_event_finds_existing_case(event, case_factory):
+    """Cerify that an open Case is connected to a new event when applicable."""
+    case = case_factory(ip_network=ipaddress.ip_network(event.ip_address))
+    assert event.case is None
+    event.get_or_create_case()
+    assert event.case == case
+    assert (
+        Case.objects.last() == case
+    ), "A new case was created when it was not expected"
+
+
+def test_new_event_creates_new_case(event):
+    assert event.case is None
+    event.get_or_create_case()
+    assert event.case is not None

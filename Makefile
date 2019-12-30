@@ -45,6 +45,10 @@ requirements.txt:
 
 
 clean:
-	rm -rf $(VENVDIR)
-	find .  -type d -name __pycache__ -print0 | xargs --null rm -rf
+	find . -type d -name __pycache__ -print0 | xargs --null rm -rf
+	rm -rf .coverage .pytest_cache
 	rm -rf abusor.egg-info
+
+realclean: clean
+	rm -rf $(VENVDIR)
+	rm -f db.sqlite

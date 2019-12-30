@@ -18,8 +18,9 @@ class Base(Configuration):
         "django.contrib.sessions",
         "django.contrib.messages",
         "django.contrib.staticfiles",
-        "abusor.events",
+        "abusor.events.apps.EventsConfig",
         "abusor.frontend",
+        "abusor.rules.apps.RulesConfig",
         "rest_framework",
         "rest_framework.authtoken",
         "raven.contrib.django.raven_compat",
@@ -49,6 +50,30 @@ class Base(Configuration):
             },
         }
     ]
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "console": {"format": "%(asctime)s %(name)s %(levelname)s %(message)s"}
+        },
+        "handlers": {
+            "console": {"class": "logging.StreamHandler", "formatter": "console"},
+            "sentry": {
+                "level": "ERROR",
+                "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
+            },
+        },
+        "loggers": {
+            "abusor": {
+                "level": values.Value("INFO", environ_name="LOG_LEVEL"),
+                "handlers": ["console", "sentry"],
+            },
+            "django": {
+                "level": values.Value("INFO", environ_name="LOG_LEVEL"),
+                "handlers": ["console", "sentry"],
+            },
+        },
+    }
     WSGI_APPLICATION = "abusor.wsgi.application"
     _SQLITE_DB_PATH = os.path.join(BASE_DIR, "db.sqlite")
     DATABASES = values.DatabaseURLValue(f"sqlite:///{_SQLITE_DB_PATH}")
@@ -84,11 +109,10 @@ class Main(Base):
     }
 
     ABUSOR_SCORE_DECAY = values.FloatValue(0.9)
-    ABUSOR_EVENT_RULES = []
-    ABUSOR_CASE_RULES = []
 
 
 class Test(Main):
     """Specific settngs for test runs."""
 
     SECRET_KEY = "secret"
+    DEBUG = True

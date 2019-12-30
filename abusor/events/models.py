@@ -1,12 +1,12 @@
 import ipaddress
 import logging
+from decimal import Decimal
 
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
 from .fields import GenericIPNetworkField
-from .rules import apply_effect, check_requirement
 
 MAX_SCORE = 999.99
 
@@ -26,20 +26,18 @@ class Case(models.Model):
     end_date = models.DateTimeField(null=True)
     subject = models.CharField(max_length=128, blank=True)
     description = models.TextField(blank=True)
-    score = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    score = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal("0"))
 
     def __str__(self):
-        """Default string representation."""
-        detail = self.subject if self.subject else self.start_date.isoformat()
-        return "{} ({})".format(detail, self.ip_network)
+        return f"<Case {self.pk}>"
 
-    def expand(self, netmask):
-        """Expand the case to the given netmask."""
-        if self.ip_network.prefixlen < netmask:
-            # netmask too low, don't do anything
+    def expand_network_prefix(self, prefixlen):
+        """Expand the case to the given prefix length."""
+        if self.ip_network.prefixlen < prefixlen:
+            # prefix length equal or too low, don't do anything
             return
-        # set the new ip_network
-        ip_network_str = "{}/{}".format(self.ip_network.network_address, netmask)
+        # calculate the new ip_network
+        ip_network_str = f"{self.ip_network.network_address}/{prefixlen}"
         self.ip_network = ipaddress.ip_network(ip_network_str, strict=False)
 
         # find open cases in the new network, and merge them in.
@@ -55,18 +53,6 @@ class Case(models.Model):
         # get the score from the new events
         self.recalculate_score()
         return bool(merged)
-
-    def expand_ipv4(self, netmask):
-        """Expand to the given netmask when the Case addresses an ipv4 network."""
-        if self.ip_network.version != 4:
-            return False
-        return self.expand(netmask)
-
-    def expand_ipv6(self, netmask):
-        """Expand to the given netmask when the Case addresses an ipv6 network."""
-        if self.ip_network.version != 6:
-            return False
-        return self.expand(netmask)
 
     def recalculate_score(self):
         """Recalculate Case score from actual Event scores."""
@@ -93,25 +79,6 @@ class Case(models.Model):
         self.end_date = timezone.now()
         return True
 
-    def apply_business_rules(self):
-        """
-        Apply business rules on the case.
-
-        TODO: return the number applied effects, not the number of triggered rules
-        Returns the number of triggered rules.
-        """
-        self.recalculate_score()
-
-        applied = 0
-        for rule in settings.ABUSOR_CASE_RULES:
-            require_result = check_requirement(self, rule["when"])
-            if require_result:
-                effect_result = apply_effect(self, rule["then"])
-                if effect_result:
-                    applied += 1
-        self.save()
-        return applied
-
 
 class Event(models.Model):
     """An abuse related event."""
@@ -134,7 +101,7 @@ class Event(models.Model):
     date = models.DateTimeField()
     subject = models.CharField(max_length=128)
     description = models.TextField(blank=True)
-    score = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    score = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal("0"))
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, blank=True)
     case = models.ForeignKey(
         "Case", models.SET_NULL, blank=True, null=True, related_name="events"
@@ -150,8 +117,7 @@ class Event(models.Model):
         return round(score, 2)
 
     def __str__(self):
-        """Default string representation."""
-        return "{} ({})".format(self.subject, self.ip_address)
+        return f"<Event {self.pk}>"
 
     def find_related_case(self):
         """Find a case related to this event."""
@@ -160,27 +126,17 @@ class Event(models.Model):
             if case.ip_network.overlaps(event_network):
                 return case
 
-    def apply_business_rules(self):
-        """Find applicable business rules and apply them to the Event."""
+    def get_or_create_case(self):
         if not self.case:
             case = self.find_related_case()
             if not case:
-                create_data = {
-                    "ip_network": ipaddress.ip_network(self.ip_address),
-                    "as_number": self.as_number,
-                    "country_code": self.country_code,
-                    "subject": self.subject,
-                    "start_date": self.report_date,
-                }
-                case = Case.objects.create(**create_data)
+                case = Case.objects.create(
+                    ip_network=ipaddress.ip_network(self.ip_address),
+                    as_number=self.as_number,
+                    country_code=self.country_code,
+                    subject=self.subject,
+                    start_date=self.report_date,
+                )
             self.case = case
-
-        applied = 0
-        for rule in settings.ABUSOR_EVENT_RULES:
-            require_result = check_requirement(self, rule["when"])
-            if require_result:
-                effect_result = apply_effect(self, rule["then"])
-                if effect_result:
-                    applied += 1
-        self.save()
-        return applied
+            self.save()
+        return self.case
