@@ -56,3 +56,13 @@ def ipv6_case(fake, event_factory, case_factory):
     event.case = case
     event.save()
     return case
+
+
+@pytest.fixture
+def nearby_cases(event_factory, case_factory):
+    cases = []
+    for x in range(1, 4):
+        case = case_factory(_ip_address=f"192.0.0.{x}", _netmask=32)
+        event_factory(ip_address=f"192.0.0.{x}", case=case)
+        cases.append(case)
+    return cases

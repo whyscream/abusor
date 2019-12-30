@@ -31,13 +31,13 @@ class Case(models.Model):
     def __str__(self):
         return f"<Case {self.pk}>"
 
-    def expand(self, netmask):
-        """Expand the case to the given netmask."""
-        if self.ip_network.prefixlen < netmask:
-            # netmask too low, don't do anything
+    def expand_network_prefix(self, prefixlen):
+        """Expand the case to the given prefix length."""
+        if self.ip_network.prefixlen < prefixlen:
+            # prefix length equal or too low, don't do anything
             return
-        # set the new ip_network
-        ip_network_str = "{}/{}".format(self.ip_network.network_address, netmask)
+        # calculate the new ip_network
+        ip_network_str = f"{self.ip_network.network_address}/{prefixlen}"
         self.ip_network = ipaddress.ip_network(ip_network_str, strict=False)
 
         # find open cases in the new network, and merge them in.
@@ -53,18 +53,6 @@ class Case(models.Model):
         # get the score from the new events
         self.recalculate_score()
         return bool(merged)
-
-    def expand_ipv4(self, netmask):
-        """Expand to the given netmask when the Case addresses an ipv4 network."""
-        if self.ip_network.version != 4:
-            return False
-        return self.expand(netmask)
-
-    def expand_ipv6(self, netmask):
-        """Expand to the given netmask when the Case addresses an ipv6 network."""
-        if self.ip_network.version != 6:
-            return False
-        return self.expand(netmask)
 
     def recalculate_score(self):
         """Recalculate Case score from actual Event scores."""

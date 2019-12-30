@@ -89,7 +89,7 @@ def test_case_recalculate_score(case, event_factory):
     assert score is None
 
 
-def test_case_expand(case_factory, event_factory):
+def test_case_expand_network_prefix_ipv4(case_factory, event_factory):
     """Verify that cases will be merged when expanding a case in the nearby network."""
     for ip in ["192.0.2.34", "192.0.2.178", "198.51.100.17"]:
         # get some test data
@@ -102,14 +102,14 @@ def test_case_expand(case_factory, event_factory):
     open_cases = Case.objects.filter(end_date=None)
     assert open_cases.count() == 4
 
-    case.expand(29)
+    case.expand_network_prefix(29)
     case.save()
     case.refresh_from_db()
     assert case.events.count() == 2
     open_cases = Case.objects.filter(end_date=None)
     assert open_cases.count() == 3
 
-    case.expand(24)
+    case.expand_network_prefix(24)
     case.save()
     case.refresh_from_db()
     assert case.events.count() == 3
@@ -119,38 +119,14 @@ def test_case_expand(case_factory, event_factory):
     assert "192.0.2.0/24" in [str(x.ip_network) for x in open_cases]
     assert "198.51.100.17/32" in [str(x.ip_network) for x in open_cases]
 
-    case.expand(29)
+    case.expand_network_prefix(29)
     case.save()
     case.refresh_from_db()
     assert case.ip_network.prefixlen == 24, "prefix length was unexpectedly decreased"
 
 
-def test_case_expand_ipv4(case_factory, event_factory):
-    """Verify that expanding a case using the wrong protocol returns False."""
-    # some fixtures
-    for ip in ["192.0.2.1", "192.0.2.2"]:
-        case = case_factory(ip_network=ipaddress.ip_network(ip))
-        event_factory(ip_address=ip, case=case)
-
-    # subject case
-    case = case_factory(ip_network=ipaddress.ip_network("192.0.2.3"))
-    event_factory(ip_address="192.0.2.3", case=case)
-
-    result = case.expand_ipv6(80)
-    assert result is False
-    open_cases = Case.objects.filter(end_date=None)
-    assert open_cases.count() == 3
-    assert case.events.count() == 1
-
-    result = case.expand_ipv4(29)
-    assert result is True
-    open_cases = Case.objects.filter(end_date=None)
-    assert open_cases.count() == 1
-    assert case.events.count() == 3
-
-
-def test_case_expand_ipv6(case_factory, event_factory):
-    """Verify that expanding a case using the wrong protocol returns False."""
+def test_case_expand_network_prefix_ipv6(case_factory, event_factory):
+    """Verify that we can expand an ipv6 case."""
     # some fixtures
     for ip in ["2001:db8::1", "2001:db8::2"]:
         case = case_factory(_ip_address=ip)
@@ -160,13 +136,7 @@ def test_case_expand_ipv6(case_factory, event_factory):
     case = case_factory(ip_network=ipaddress.ip_network("2001:db8::3"))
     event_factory(ip_address="2001:db8::3", case=case)
 
-    result = case.expand_ipv4(29)
-    assert result is False
-    open_cases = Case.objects.filter(end_date=None)
-    assert open_cases.count() == 3
-    assert case.events.count() == 1
-
-    result = case.expand_ipv6(80)
+    result = case.expand_network_prefix(80)
     assert result is True
     open_cases = Case.objects.filter(end_date=None)
     assert open_cases.count() == 1
