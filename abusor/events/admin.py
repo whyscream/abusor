@@ -21,6 +21,8 @@ class EventAdmin(admin.ModelAdmin):
     readonly_fields = ("report_date",)
     save_on_top = True
 
+    raw_id_fields = ("case",)
+
     def has_case(self, obj):
         """Whether a case is attached or not."""
         return bool(obj.case)
