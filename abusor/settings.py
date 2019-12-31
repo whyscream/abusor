@@ -1,6 +1,10 @@
 import os.path
 
+import sentry_sdk
 from configurations import Configuration, values
+from sentry_sdk.integrations.django import DjangoIntegration
+
+from .version import VERSION
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,7 +27,6 @@ class Base(Configuration):
         "abusor.rules.apps.RulesConfig",
         "rest_framework",
         "rest_framework.authtoken",
-        "raven.contrib.django.raven_compat",
     ]
     MIDDLEWARE = [
         "django.middleware.security.SecurityMiddleware",
@@ -57,20 +60,16 @@ class Base(Configuration):
             "console": {"format": "%(asctime)s %(name)s %(levelname)s %(message)s"}
         },
         "handlers": {
-            "console": {"class": "logging.StreamHandler", "formatter": "console"},
-            "sentry": {
-                "level": "ERROR",
-                "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
-            },
+            "console": {"class": "logging.StreamHandler", "formatter": "console"}
         },
         "loggers": {
             "abusor": {
                 "level": values.Value("INFO", environ_name="LOG_LEVEL"),
-                "handlers": ["console", "sentry"],
+                "handlers": ["console"],
             },
             "django": {
                 "level": values.Value("INFO", environ_name="LOG_LEVEL"),
-                "handlers": ["console", "sentry"],
+                "handlers": ["console"],
             },
         },
     }
@@ -107,8 +106,20 @@ class Main(Base):
         "PAGE_SIZE": 10,
         "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     }
+    SENTRY_DSN = values.Value(None, environ_prefix="")
 
-    ABUSOR_SCORE_DECAY = values.FloatValue(0.9)
+    @classmethod
+    def post_setup(cls):
+        super().post_setup()
+
+        sentry_sdk.init(
+            dsn=cls.SENTRY_DSN,
+            integrations=[DjangoIntegration()],
+            send_default_pii=True,
+            release=VERSION,
+        )
+
+    ABUSOR_SCORE_DECAY = values.FloatValue(0.9, environ_prefix="")
 
 
 class Test(Main):

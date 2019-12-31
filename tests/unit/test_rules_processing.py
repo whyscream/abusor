@@ -88,7 +88,8 @@ def test_rule_apply_invalid_object(caplog):
     )
 
 
-def test_eventrule_apply_requirement_does_not_fulfill(event):
+def test_eventrule_apply_requirement_does_not_fulfill(event_factory):
+    event = event_factory(subject="bar")
     EventRule.objects.create(
         requirement="SubjectContains",
         requirement_param="foo",
