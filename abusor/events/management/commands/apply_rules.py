@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.db import transaction
 
 from abusor.events.models import Case
 from abusor.rules.models import CaseRule
@@ -18,17 +19,18 @@ class Command(BaseCommand):
         updated_cases = 0
         closed_cases = 0
         for case in cases:
-            case.recalculate_score()
-            case, num_applied = apply_rules(case, CaseRule.objects.all())
-            case.save()
-            if num_applied:
-                if case.end_date:
-                    closed_cases += 1
-                    msg = f"Case {case} updated by {num_applied} rules and closed."
-                else:
-                    updated_cases += 1
-                    msg = "Case {case} updated by {num_applied} rules."
-                self.stdout.write(msg)
+            with transaction.atomic():
+                case.recalculate_score()
+                case, num_applied = apply_rules(case, CaseRule.objects.all())
+                case.save()
+                if num_applied:
+                    if case.end_date:
+                        closed_cases += 1
+                        msg = f"Case {case} updated by {num_applied} rules and closed."
+                    else:
+                        updated_cases += 1
+                        msg = "Case {case} updated by {num_applied} rules."
+                    self.stdout.write(msg)
 
         self.stdout.write(
             self.style.SUCCESS(
