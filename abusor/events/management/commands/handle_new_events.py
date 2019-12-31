@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 
 from abusor.events.models import Event
 from abusor.events.utils import find_as_number, find_country_code
-from abusor.rules.models import CaseRules, EventRules
+from abusor.rules.models import CaseRule, EventRule
 from abusor.rules.processing import apply_rules
 
 
@@ -29,12 +29,12 @@ class Command(BaseCommand):
                     event.country_code = find_country_code(ip_address) or "--"
                 event_updated = True
 
-            event, num_applied = apply_rules(event, EventRules.objects.all())
+            event, num_applied = apply_rules(event, EventRule.objects.all())
             if event_updated or num_applied:
                 event.save()
 
             case = event.get_or_create_case()
-            case, num_applied = apply_rules(case, CaseRules.objects.all())
+            case, num_applied = apply_rules(case, CaseRule.objects.all())
             if num_applied:
                 case.save()
         self.stdout.write(self.style.SUCCESS(f"Processed {events.count()} new events."))

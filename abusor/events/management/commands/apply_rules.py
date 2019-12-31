@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from abusor.events.models import Case
-from abusor.rules.models import CaseRules
+from abusor.rules.models import CaseRule
 from abusor.rules.processing import apply_rules
 
 
@@ -19,7 +19,7 @@ class Command(BaseCommand):
         closed_cases = 0
         for case in cases:
             case.recalculate_score()
-            case, num_applied = apply_rules(case, CaseRules.objects.all())
+            case, num_applied = apply_rules(case, CaseRule.objects.all())
             case.save()
             if num_applied:
                 if case.end_date:
