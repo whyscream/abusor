@@ -92,6 +92,19 @@ class Base(Configuration):
     STATIC_URL = "/static/"
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+    @classmethod
+    def post_setup(cls):
+        super().post_setup()
+        if "mysql" in cls.DATABASES["default"]["ENGINE"]:
+            cls.DATABASES["default"]["ATOMIC_REQUESTS"] = True
+
+            if "OPTIONS" not in cls.DATABASES["default"]:
+                cls.DATABASES["default"]["OPTIONS"] = {}
+
+            cls.DATABASES["default"]["OPTIONS"][
+                "init_command"
+            ] = "SET sql_mode='STRICT_TRANS_TABLES'"
+
 
 class Main(Base):
     """Third Party and application settings."""
