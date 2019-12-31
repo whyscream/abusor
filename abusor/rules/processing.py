@@ -21,20 +21,27 @@ def str_to_any(input):
     When nothing succeeds, we return the string as-is.
     """
     try:
-        return int(input)
+        result = int(input)
+        logger.debug(f"Converted '{input}' to int: {result}.")
+        return result
     except ValueError:
         pass
 
     try:
-        return decimal.Decimal(input)
+        result = decimal.Decimal(input)
+        logger.debug(f"Converted '{input}' to decimal: {result}.")
+        return result
     except decimal.InvalidOperation:
         pass
 
     if input.lower() == "true":
+        logger.debug(f"Converted '{input}' to boolean: True.")
         return True
     if input.lower() == "false":
+        logger.debug(f"Converted '{input}' to boolean: False.")
         return False
 
+    logger.debug(f"Returned '{input}' as string: {input}.")
     return input
 
 
@@ -99,7 +106,8 @@ def apply_rule(obj, rule):
         return obj, False
 
     try:
-        requirement_outcome = requirement_to_apply(obj, rule.requirement_param)
+        param = str_to_any(rule.requirement_param)
+        requirement_outcome = requirement_to_apply(obj, param)
     except PluginError as err:
         logger.error(f"Failed to verify requirement {rule.requirement} on {obj}: {err}")
         return obj, False
