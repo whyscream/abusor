@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 class PluginMount(type):
     def __init__(cls, name, bases, attrs):
         if not hasattr(cls, "plugins"):
-            logger.info(f"Initialized plugin registry for {name}.")
+            logger.debug(f"Initialized plugin registry for {name}.")
             cls.plugins = []
         else:
             # find out plugin parent
@@ -16,7 +16,7 @@ class PluginMount(type):
                 if klass.__module__ == "abusor.rules.plugins":
                     parent = klass.__name__
                     break
-            logger.info(f"Registered plugin {name} to {parent}.")
+            logger.debug(f"Registered plugin {name} to {parent}.")
             cls.plugins.append(cls)
 
 
