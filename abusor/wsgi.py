@@ -9,6 +9,10 @@ https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 
 import os
 
+from dotenv import find_dotenv, load_dotenv
+
+load_dotenv(find_dotenv())
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "abusor.settings")
 os.environ.setdefault("DJANGO_CONFIGURATION", "Main")
 

@@ -13,3 +13,4 @@ __pycache__
 # deployment
 /abusor/settings/custom.py
 /static/
+/.env
