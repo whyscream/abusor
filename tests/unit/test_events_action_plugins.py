@@ -16,8 +16,9 @@ pytestmark = pytest.mark.django_db
 def test_events_action_alter_score(event_factory, value, action_value, expected):
     event = event_factory(score=Decimal(value))
     action = AlterScore()
-    updated_event = action(event, score=Decimal(action_value))
+    updated_event, result = action(event, score=Decimal(action_value))
     assert updated_event.score == Decimal(expected)
+    assert result is True
 
 
 def test_events_action_alter_score_no_kwargs():
@@ -49,8 +50,9 @@ def test_events_action_alter_score_invalid_object():
 def test_events_action_close(case):
     assert case.end_date is None
     action = Close()
-    updated_case = action(case)
+    updated_case, result = action(case)
     assert updated_case.end_date is not None
+    assert result is True
 
 
 def test_events_action_close_invalid_object():
@@ -67,8 +69,9 @@ def test_events_action_expand_network_prefix(nearby_cases):
     case = nearby_cases[0]
     assert case.events.count() == 1
     action = ExpandNetworkPrefix()
-    updated_case = action(case, v4prefixlen=29)
+    updated_case, result = action(case, v4prefixlen=29)
     assert updated_case.events.count() == 3
+    assert result is True
 
 
 def test_events_action_expand_network_prefix_object_missing_ip_network_attr():

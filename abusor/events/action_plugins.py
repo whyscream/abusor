@@ -12,7 +12,7 @@ class AlterScore(ActionProvider):
             raise ActionPluginError(f"Object of type {type_} has no attribute 'score'.")
 
         obj.score = obj.score + score
-        return obj
+        return obj, True
 
 
 class Close(ActionProvider):
@@ -21,8 +21,8 @@ class Close(ActionProvider):
             type_ = type(obj)
             raise ActionPluginError(f"Object of type {type_} has no attribute 'close'.")
 
-        obj.close()
-        return obj
+        result = obj.close()
+        return obj, result
 
 
 class ExpandNetworkPrefix(ActionProvider):
@@ -49,5 +49,5 @@ class ExpandNetworkPrefix(ActionProvider):
             if prefixlen is None:
                 raise ActionPluginError("Missing required parameter 'v6prefixlen'.")
 
-        obj.expand_network_prefix(prefixlen)
-        return obj
+        result = obj.expand_network_prefix(prefixlen)
+        return obj, result

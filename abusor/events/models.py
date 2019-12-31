@@ -35,7 +35,7 @@ class Case(models.Model):
         """Expand the case to the given prefix length."""
         if self.ip_network.prefixlen < prefixlen:
             # prefix length equal or too low, don't do anything
-            return
+            return False
         # calculate the new ip_network
         ip_network_str = f"{self.ip_network.network_address}/{prefixlen}"
         self.ip_network = ipaddress.ip_network(ip_network_str, strict=False)
