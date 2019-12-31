@@ -29,7 +29,7 @@ class Command(BaseCommand):
                         msg = f"Case {case} updated by {num_applied} rules and closed."
                     else:
                         updated_cases += 1
-                        msg = "Case {case} updated by {num_applied} rules."
+                        msg = f"Case {case} updated by {num_applied} rules."
                     self.stdout.write(msg)
 
         self.stdout.write(
