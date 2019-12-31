@@ -137,6 +137,7 @@ class Event(models.Model):
                     subject=self.subject,
                     start_date=self.report_date,
                 )
+                logger.info(f"Created new {case} related to {self}.")
             self.case = case
             self.save()
         return self.case
