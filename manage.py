@@ -3,8 +3,12 @@
 import os
 import sys
 
+from dotenv import find_dotenv, load_dotenv
+
 
 def main():
+    load_dotenv(find_dotenv())
+
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "abusor.settings")
     os.environ.setdefault("DJANGO_CONFIGURATION", "Main")
 
