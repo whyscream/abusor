@@ -124,7 +124,7 @@ def apply_rule(obj, rule):
     try:
         kwargs = parse_kwargs_string(rule.action_kwargs)
         obj = action_to_apply(obj, **kwargs)
-        logger.info(f"Applied action {rule.action}")
+        logger.info(f"Applied action {rule.action} on {obj}.")
         return obj, True
     except PluginError as err:
         logger.error(f"Failed to apply action {rule.action} on {obj}: {err}")
