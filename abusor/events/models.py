@@ -41,18 +41,17 @@ class Case(models.Model):
         self.ip_network = ipaddress.ip_network(ip_network_str, strict=False)
 
         # find open cases in the new network, and merge them in.
-        merged = 0
         for case in Case.objects.filter(end_date=None).exclude(pk=self.pk):
             if self.ip_network.overlaps(case.ip_network):
-                # merge them
+                logger.debug(
+                    f"Merged {case} into {self} while expanding network prefix."
+                )
                 case.events.all().update(case=self)
                 case.close()
                 case.save()
-                merged += 1
-
         # get the score from the new events
         self.recalculate_score()
-        return bool(merged)
+        return True
 
     def recalculate_score(self):
         """Recalculate Case score from actual Event scores."""
