@@ -4,6 +4,9 @@ python:
   - 3.6
   - 3.7
   - 3.8
+branches:
+  only:
+  - master
 env:
   global:
     - DJANGO_SECRET_KEY=secret
