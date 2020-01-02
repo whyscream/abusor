@@ -12,6 +12,11 @@ from abusor.rules.plugins import RequirementPluginError
 pytestmark = pytest.mark.django_db
 
 
+def test_events_requirement_name():
+    req = ScoreIsAbove()
+    assert req.name == "ScoreIsAbove"
+
+
 @pytest.mark.parametrize(
     "value, required_value, expected",
     [

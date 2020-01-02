@@ -20,11 +20,18 @@ class PluginMount(type):
             cls.plugins.append(cls)
 
 
-class RequirementProvider(object, metaclass=PluginMount):
+class PluginBase:
+    @property
+    def name(self):
+        """Render a short name for the plugin."""
+        return self.__class__.__name__
+
+
+class RequirementProvider(PluginBase, metaclass=PluginMount):
     pass
 
 
-class ActionProvider(object, metaclass=PluginMount):
+class ActionProvider(PluginBase, metaclass=PluginMount):
     pass
 
 
