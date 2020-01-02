@@ -1,5 +1,6 @@
 import ipaddress
 from datetime import timedelta
+from decimal import Decimal
 
 import pytest
 from django.utils import timezone
@@ -77,12 +78,12 @@ def test_case_recalculate_score(case, event_factory):
 
     event = event_factory(case=case, score=5, date=NOW)
     score = case.recalculate_score()
-    assert score == 10
+    assert score == Decimal("10")
 
     event.date = LAST_WEEK
     event.save()
     score = case.recalculate_score()
-    assert score == 7.39
+    assert score == Decimal("7.39")
 
     case.close()
     score = case.recalculate_score()

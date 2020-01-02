@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from .fields import GenericIPNetworkField
 
-MAX_SCORE = 999.99
+MAX_SCORE = Decimal("999.99")
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ class Case(models.Model):
         for event in self.events.all():
             scores.append(event.actual_score)
 
-        self.score = round(sum(scores), 2)
+        self.score = Decimal(str(round(sum(scores), 2)))
         if self.score > MAX_SCORE:
             logger.warning(
                 "Score {:f} for case {:d} exceeds MAX_SCORE, capped".format(
