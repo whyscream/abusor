@@ -33,7 +33,7 @@ class Case(models.Model):
 
     def expand_network_prefix(self, prefixlen):
         """Expand the case to the given prefix length."""
-        if self.ip_network.prefixlen < prefixlen:
+        if self.ip_network.prefixlen <= prefixlen:
             # prefix length equal or too low, don't do anything
             return False
         # calculate the new ip_network
