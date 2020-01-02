@@ -74,7 +74,11 @@ class Case(models.Model):
         return self.score
 
     def close(self, *args):
-        """Close the case."""
+        """Close the case.
+
+        TOOD: remove this method as soon as we don't need it anymore for
+        expand_network_prefix()..
+        """
         self.recalculate_score()
         self.end_date = timezone.now()
         return True

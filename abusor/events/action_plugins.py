@@ -1,4 +1,10 @@
+import logging
+
+from django.utils import timezone
+
 from abusor.rules.plugins import ActionPluginError, ActionProvider
+
+logger = logging.getLogger(__name__)
 
 
 class AlterScore(ActionProvider):
@@ -17,12 +23,18 @@ class AlterScore(ActionProvider):
 
 class Close(ActionProvider):
     def __call__(self, obj, **kwargs):
-        if not hasattr(obj, "close"):
+        if not hasattr(obj, "end_date"):
             type_ = type(obj)
-            raise ActionPluginError(f"Object of type {type_} has no attribute 'close'.")
+            raise ActionPluginError(
+                f"Object of type {type_} has no attribute 'end_date'."
+            )
 
-        result = obj.close()
-        return obj, result
+        if obj.end_date is not None:
+            logger.debug(f"Object {obj} is already closed.")
+            return obj, False
+
+        obj.end_date = timezone.now()
+        return obj, True
 
 
 class ExpandNetworkPrefix(ActionProvider):

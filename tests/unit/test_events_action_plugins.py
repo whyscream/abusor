@@ -2,6 +2,7 @@ import ipaddress
 from decimal import Decimal
 
 import pytest
+from django.utils import timezone
 
 from abusor.events.action_plugins import AlterScore, Close, ExpandNetworkPrefix
 from abusor.rules.plugins import ActionPluginError
@@ -60,9 +61,17 @@ def test_events_action_close_invalid_object():
     action = Close()
     with pytest.raises(ActionPluginError) as excinfo:
         action(obj)
-    assert "Object of type <class 'object'> has no attribute 'close'." in str(
+    assert "Object of type <class 'object'> has no attribute 'end_date'." in str(
         excinfo.value
     )
+
+
+def test_events_actions_close_already_closed(case_factory):
+    case = case_factory(end_date=timezone.now())
+    action = Close()
+    updated_case, result = action(case)
+    assert result is False
+    assert updated_case == case
 
 
 def test_events_action_expand_network_prefix(nearby_cases):
