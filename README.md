@@ -72,4 +72,5 @@ A random list of things that I want to improve / features I want to add.
 - [ ] Some statistics (maybe public).
 - [ ] Publishable data (f.i. a dnsbl).
 - [x] Remove custom settings file, use env var based setup (django-configurations?).
-- [ ] Define rules in admin interface.
+- [x] Define rules in admin interface.
+- [ ] Improve validation of rule config in admin.
