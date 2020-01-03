@@ -1,8 +1,9 @@
 from decimal import Decimal
+from ipaddress import ip_network
 
 import pytest
 
-from abusor.rules.models import EventRule
+from abusor.rules.models import CaseRule, EventRule
 from abusor.rules.processing import apply_rules, parse_kwargs_string, str_to_any
 
 pytestmark = pytest.mark.django_db
@@ -135,3 +136,19 @@ def test_eventrule_apply_action_failed(event_factory, caplog):
 
     assert "Failed to apply action AlterScore on <Event" in caplog.text
     assert "Missing required parameter 'score'." in caplog.text
+
+
+def test_eventrule_applied_action_no_effect(case_factory, caplog):
+    CaseRule.objects.create(
+        requirement="SubjectContains",
+        requirement_param="foo",
+        action="ExpandNetworkPrefix",
+        action_kwargs="v4prefixlen=32",
+    )
+    case = case_factory(
+        ip_network=ip_network("192.0.0.1/32"), subject="this contains foo"
+    )
+
+    updated_case, num_applied = apply_rules(case, CaseRule.objects.all())
+    assert num_applied == 0
+    assert case.ip_network == ip_network("192.0.0.1/32"), "Prefixlength was changed."
