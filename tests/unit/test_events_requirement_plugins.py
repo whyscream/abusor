@@ -46,6 +46,14 @@ def test_events_requirement_score_is_above_invalid_object():
     )
 
 
+def test_events_requirement_score_is_above_invalid_param():
+    obj = object()
+    req = ScoreIsAbove()
+    with pytest.raises(RequirementPluginError) as excinfo:
+        req(obj, "not_a_decimal")
+    assert "Value 'not_a_decimal' is no decimal." in str(excinfo.value)
+
+
 @pytest.mark.parametrize(
     "value, required_value, expected",
     [
@@ -75,6 +83,14 @@ def test_events_requirement_score_is_below_invalid_object():
     )
 
 
+def test_events_requirement_score_is_below_invalid_param():
+    obj = object()
+    req = ScoreIsBelow()
+    with pytest.raises(RequirementPluginError) as excinfo:
+        req(obj, "not_a_decimal")
+    assert "Value 'not_a_decimal' is no decimal." in str(excinfo.value)
+
+
 @pytest.mark.parametrize(
     "value, required_value, expected",
     [("foo", "foo", True), ("bar", "foo", False), ("FOO", "foo", True)],
@@ -96,3 +112,11 @@ def test_events_requirement_subject_contains_invalid_object():
     assert "Object of type <class 'object'> has no attribute 'subject'." in str(
         excinfo.value
     )
+
+
+def test_events_requirement_subject_contains_invalid_param():
+    obj = object()
+    req = SubjectContains()
+    with pytest.raises(RequirementPluginError) as excinfo:
+        req(obj, 10)  # not a string
+    assert "Value '10' is no string." in str(excinfo.value)

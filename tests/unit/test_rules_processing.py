@@ -58,7 +58,7 @@ def test_eventrule_apply(event_factory):
 
 
 def test_eventrule_apply_invalid_requirement(event, caplog):
-    EventRule.objects.create(
+    rule = EventRule.objects.create(
         requirement="DoesNotExist",
         requirement_param="foo",
         action="AlterScore",
@@ -67,7 +67,10 @@ def test_eventrule_apply_invalid_requirement(event, caplog):
     updated_event, num_applied = apply_rules(event, EventRule.objects.all())
     assert num_applied == 0
 
-    assert "Invalid requirement 'DoesNotExist' in rule" in caplog.text
+    assert (
+        f"Error while processing rule {rule}: "
+        f"Requirement 'DoesNotExist' does not exist." in caplog.text
+    )
 
 
 def test_rule_apply_invalid_object(caplog):
@@ -82,8 +85,10 @@ def test_rule_apply_invalid_object(caplog):
     updated_obj, num_applied = apply_rules(obj, EventRule.objects.all())
     assert num_applied == 0
 
-    assert "Failed to verify requirement SubjectContains on <object" in caplog.text
-    assert "Object of type <class 'object'> has no attribute 'subject'." in caplog.text
+    assert (
+        "Failed to verify requirement SubjectContains: Object of type <class 'object'> "
+        "has no attribute 'subject'." in caplog.text
+    )
 
 
 def test_eventrule_apply_requirement_does_not_fulfill(event_factory):

@@ -1,7 +1,12 @@
 import decimal
 import logging
 
-from .plugins import ActionProvider, PluginError, RequirementProvider
+from .plugins import (
+    ActionProvider,
+    PluginError,
+    RequirementPluginError,
+    RequirementProvider,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +94,22 @@ def get_action(name):
             return action
 
 
+def apply_requirement(obj, requirement, param):
+    requirement_to_apply = get_requirement(requirement)
+    if not requirement_to_apply:
+        raise RequirementPluginError(f"Requirement '{requirement}' does not exist.")
+
+    try:
+        param = str_to_any(param)
+        outcome = requirement_to_apply(obj, param)
+    except RequirementPluginError as err:
+        raise RequirementPluginError(
+            f"Failed to verify requirement {requirement}: {err}"
+        ) from err
+
+    return obj, outcome
+
+
 def apply_rule(obj, rule):
     """Apply a rule on an object (f.i. a Case or Event).
 
@@ -100,19 +121,13 @@ def apply_rule(obj, rule):
     Finally, the updated object and a boolean that indicates whether the action
     was applied, is returned. The returned object isn't saved to the database.
     """
-    requirement_to_apply = get_requirement(rule.requirement)
-    if not requirement_to_apply:
-        logger.error(f"Invalid requirement '{rule.requirement}' in rule {rule.pk}.")
-        return obj, False
-
     try:
-        param = str_to_any(rule.requirement_param)
-        requirement_outcome = requirement_to_apply(obj, param)
-    except PluginError as err:
-        logger.error(f"Failed to verify requirement {rule.requirement} on {obj}: {err}")
+        obj, outcome = apply_requirement(obj, rule.requirement, rule.requirement_param)
+    except RequirementPluginError as err:
+        logger.error(f"Error while processing rule {rule}: {err}")
         return obj, False
 
-    if not requirement_outcome:
+    if not outcome:
         logger.debug("Skipping rule {rule.pk} for case {case.pk}, requirement fails.")
         return obj, False
 

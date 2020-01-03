@@ -1,4 +1,11 @@
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.translation import gettext_lazy as _
+
+from abusor.events.models import Case
+
+from .plugins import PluginError
+from .processing import apply_requirement
 
 
 class Rule(models.Model):
@@ -12,8 +19,19 @@ class Rule(models.Model):
 
 
 class EventRule(Rule):
-    pass
+    def __str__(self):
+        return f"<EventRule {self.pk}>"
 
 
 class CaseRule(Rule):
-    pass
+    def __str__(self):
+        return f"<CaseRule {self.pk}>"
+
+    def clean(self):
+        """Validate the rule, checking params with the picked requirement and action."""
+
+        case = Case()
+        try:
+            apply_requirement(case, self.requirement, self.requirement_param)
+        except PluginError as err:
+            raise ValidationError({"requirement_param": _(str(err))})
