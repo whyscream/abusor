@@ -44,6 +44,12 @@ requirements.txt:
 	$(VENVDIR)/bin/pip-compile --generate-hashes --output-file $@
 
 
+.PHONY: codestyle
+codestyle: develop
+	$(PYTHON) -m isort --recursive $(PWD)
+	$(PYTHON) -m black --target-version py36 $(PWD)
+
+
 clean:
 	find . -type d -name __pycache__ -print0 | xargs --null rm -rf
 	rm -rf .coverage .pytest_cache
