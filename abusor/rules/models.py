@@ -1,3 +1,5 @@
+import ipaddress
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -5,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from abusor.events.models import Case
 
 from .plugins import PluginError
-from .processing import apply_requirement
+from .processing import apply_action, apply_requirement
 
 
 class Rule(models.Model):
@@ -29,9 +31,18 @@ class CaseRule(Rule):
 
     def clean(self):
         """Validate the rule, checking params with the picked requirement and action."""
+        errors = {}
 
-        case = Case()
+        case = Case(ip_network=ipaddress.ip_network("192.0.2.0/24"))
         try:
             apply_requirement(case, self.requirement, self.requirement_param)
         except PluginError as err:
-            raise ValidationError({"requirement_param": _(str(err))})
+            errors["requirement_param"] = ValidationError(_(str(err)), code="invalid")
+
+        try:
+            apply_action(case, self.action, self.action_kwargs)
+        except PluginError as err:
+            errors["action_kwargs"] = ValidationError(_(str(err)), code="invalid")
+
+        if errors:
+            raise ValidationError(errors)

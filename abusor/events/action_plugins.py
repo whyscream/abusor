@@ -1,4 +1,5 @@
 import logging
+from decimal import Decimal
 
 from django.utils import timezone
 
@@ -12,6 +13,9 @@ class AlterScore(ActionProvider):
         score = kwargs.get("score")
         if score is None:
             raise ActionPluginError("Missing required parameter 'score'.")
+        if not isinstance(score, Decimal):
+            raise ActionPluginError(f"Value '{score}' for score is no decimal.")
+
         self.obj_has_attribute(obj, "score")
         obj.score = obj.score + score
         return obj, True
@@ -36,11 +40,19 @@ class ExpandNetworkPrefix(ActionProvider):
             prefixlen = kwargs.get("v4prefixlen")
             if prefixlen is None:
                 raise ActionPluginError("Missing required parameter 'v4prefixlen'.")
+            if not isinstance(prefixlen, int):
+                raise ActionPluginError(
+                    f"Value '{prefixlen} for v4prefixlen is no integer."
+                )
 
         elif obj.ip_network.version == 6:
             prefixlen = kwargs.get("v6prefixlen")
             if prefixlen is None:
                 raise ActionPluginError("Missing required parameter 'v6prefixlen'.")
+            if not isinstance(prefixlen, int):
+                raise ActionPluginError(
+                    f"Value '{prefixlen}' for v6prefixlen is no integer."
+                )
 
         result = obj.expand_network_prefix(prefixlen)
         return obj, result

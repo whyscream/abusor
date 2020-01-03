@@ -2,8 +2,8 @@ import decimal
 import logging
 
 from .plugins import (
+    ActionPluginError,
     ActionProvider,
-    PluginError,
     RequirementPluginError,
     RequirementProvider,
 )
@@ -95,6 +95,7 @@ def get_action(name):
 
 
 def apply_requirement(obj, requirement, param):
+    """Run a requirement plugin on an object, and return the result."""
     requirement_to_apply = get_requirement(requirement)
     if not requirement_to_apply:
         raise RequirementPluginError(f"Requirement '{requirement}' does not exist.")
@@ -106,6 +107,27 @@ def apply_requirement(obj, requirement, param):
         raise RequirementPluginError(
             f"Failed to verify requirement {requirement}: {err}"
         ) from err
+
+    return obj, outcome
+
+
+def apply_action(obj, action, kwargs):
+    """Run an action plugin on an object, and return the result."""
+    action_to_apply = get_action(action)
+    if not action_to_apply:
+        raise ActionPluginError(f"Action '{action}' does not exist.")
+
+    try:
+        kwargs = parse_kwargs_string(kwargs)
+    except ValueError:
+        raise ActionPluginError(
+            f"Error while parsing kwargs, did you use 'key=value' syntax?"
+        )
+
+    try:
+        obj, outcome = action_to_apply(obj, **kwargs)
+    except ActionPluginError as err:
+        raise ActionPluginError(f"Failed to apply action {action}: {err}") from err
 
     return obj, outcome
 
@@ -122,29 +144,28 @@ def apply_rule(obj, rule):
     was applied, is returned. The returned object isn't saved to the database.
     """
     try:
-        obj, outcome = apply_requirement(obj, rule.requirement, rule.requirement_param)
+        updated_obj, requirement_outcome = apply_requirement(
+            obj, rule.requirement, rule.requirement_param
+        )
     except RequirementPluginError as err:
         logger.error(f"Error while processing rule {rule}: {err}")
         return obj, False
 
-    if not outcome:
+    if not requirement_outcome:
         logger.debug("Skipping rule {rule.pk} for case {case.pk}, requirement fails.")
         return obj, False
 
-    action_to_apply = get_action(rule.action)
-    if not action_to_apply:
-        logger.error(f"Invalid action '{rule.action}' in rule {rule.pk}.")
+    try:
+        final_obj, action_outcome = apply_action(
+            updated_obj, rule.action, rule.action_kwargs
+        )
+    except ActionPluginError as err:
+        logger.error(f"Error while processing rule {rule}: {err}")
         return obj, False
 
-    try:
-        kwargs = parse_kwargs_string(rule.action_kwargs)
-        obj, result = action_to_apply(obj, **kwargs)
-        if result:
-            logger.info(f"Applied action {rule.action} on {obj}.")
-            return obj, True
-        else:
-            logger.debug(f"Applied action {rule.action} on {obj} without any effect.")
-            return obj, False
-    except PluginError as err:
-        logger.error(f"Failed to apply action {rule.action} on {obj}: {err}")
+    if action_outcome:
+        logger.info(f"Applied action {rule.action} on {obj}.")
+        return final_obj, True
+    else:
+        logger.debug(f"Applied action {rule.action} on {obj} without any effect.")
         return obj, False

@@ -48,7 +48,7 @@ def test_eventrule_apply(event_factory):
         requirement="SubjectContains",
         requirement_param="foo",
         action="AlterScore",
-        action_kwargs="score=5",
+        action_kwargs="score=5.0",
     )
     event = event_factory(subject="this contains foo")
     assert event.score == Decimal("0.0")
@@ -108,7 +108,7 @@ def test_eventrule_apply_requirement_does_not_fulfill(event_factory):
 
 
 def test_eventrule_apply_invalid_action(event_factory, caplog):
-    EventRule.objects.create(
+    rule = EventRule.objects.create(
         requirement="SubjectContains",
         requirement_param="foo",
         action="DoesNotExist",
@@ -119,11 +119,14 @@ def test_eventrule_apply_invalid_action(event_factory, caplog):
     updated_event, num_applied = apply_rules(event, EventRule.objects.all())
     assert num_applied == 0
 
-    assert "Invalid action 'DoesNotExist' in rule" in caplog.text
+    assert (
+        f"Error while processing rule {rule}: Action 'DoesNotExist' does not exist."
+        in caplog.text
+    )
 
 
 def test_eventrule_apply_action_failed(event_factory, caplog):
-    EventRule.objects.create(
+    rule = EventRule.objects.create(
         requirement="SubjectContains",
         requirement_param="foo",
         action="AlterScore",
@@ -134,8 +137,10 @@ def test_eventrule_apply_action_failed(event_factory, caplog):
     updated_event, num_applied = apply_rules(event, EventRule.objects.all())
     assert num_applied == 0
 
-    assert "Failed to apply action AlterScore on <Event" in caplog.text
-    assert "Missing required parameter 'score'." in caplog.text
+    assert (
+        f"Error while processing rule {rule}: Failed to apply action AlterScore: "
+        f"Missing required parameter 'score'" in caplog.text
+    )
 
 
 def test_eventrule_applied_action_no_effect(case_factory, caplog):
