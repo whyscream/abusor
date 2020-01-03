@@ -41,7 +41,7 @@ def test_events_requirement_score_is_above_invalid_object():
     req = ScoreIsAbove()
     with pytest.raises(RequirementPluginError) as excinfo:
         req(obj, Decimal("5"))
-    assert "Object with type <class 'object'> has no attribute 'score'." in str(
+    assert "Object of type <class 'object'> has no attribute 'score'." in str(
         excinfo.value
     )
 
@@ -70,7 +70,7 @@ def test_events_requirement_score_is_below_invalid_object():
     req = ScoreIsBelow()
     with pytest.raises(RequirementPluginError) as excinfo:
         req(obj, Decimal("5"))
-    assert "Object with type <class 'object'> has no attribute 'score'." in str(
+    assert "Object of type <class 'object'> has no attribute 'score'." in str(
         excinfo.value
     )
 
@@ -93,6 +93,6 @@ def test_events_requirement_subject_contains_invalid_object():
     req = SubjectContains()
     with pytest.raises(RequirementPluginError) as excinfo:
         req(obj, "foo")
-    assert "Object with type <class 'object'> has no attribute 'subject'." in str(
+    assert "Object of type <class 'object'> has no attribute 'subject'." in str(
         excinfo.value
     )

@@ -83,9 +83,7 @@ def test_rule_apply_invalid_object(caplog):
     assert num_applied == 0
 
     assert "Failed to verify requirement SubjectContains on <object" in caplog.text
-    assert (
-        "Object with type <class 'object'> has no attribute 'subject'." in caplog.text
-    )
+    assert "Object of type <class 'object'> has no attribute 'subject'." in caplog.text
 
 
 def test_eventrule_apply_requirement_does_not_fulfill(event_factory):

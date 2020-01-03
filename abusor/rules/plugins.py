@@ -28,11 +28,25 @@ class PluginBase:
 
 
 class RequirementProvider(PluginBase, metaclass=PluginMount):
-    pass
+    @staticmethod
+    def obj_has_attribute(obj, attr):
+        """Validate the existence of an attribute, raise an error when it's missing."""
+        if not hasattr(obj, attr):
+            type_ = type(obj)
+            raise RequirementPluginError(
+                f"Object of type {type_} has no attribute '{attr}'."
+            )
 
 
 class ActionProvider(PluginBase, metaclass=PluginMount):
-    pass
+    @staticmethod
+    def obj_has_attribute(obj, attr):
+        """Validate the existence of an attribute, raise an error when it's missing."""
+        if not hasattr(obj, attr):
+            type_ = type(obj)
+            raise ActionPluginError(
+                f"Object of type {type_} has no attribute '{attr}'."
+            )
 
 
 class PluginError(Exception):
