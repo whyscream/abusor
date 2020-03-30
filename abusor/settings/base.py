@@ -1,20 +1,17 @@
+"""Standard Django configuration settings."""
 import os.path
 
-import sentry_sdk
-from configurations import Configuration, values
-from sentry_sdk.integrations.django import DjangoIntegration
+from environs import Env
 
-from .version import VERSION
+env = Env()
+env.read_env()
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-
-class Base(Configuration):
-    """Standard Django configuration settings."""
-
-    SECRET_KEY = values.SecretValue()
-    DEBUG = values.BooleanValue(False)
-    ALLOWED_HOSTS = values.ListValue([])
+with env.prefixed("DJANGO_"):
+    SECRET_KEY = env("SECRET_KEY")
+    DEBUG = env.bool("DEBUG", False)
+    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", ["127.0.0.1"])
     INSTALLED_APPS = [
         "django.contrib.admin",
         "django.contrib.auth",
@@ -63,19 +60,25 @@ class Base(Configuration):
             "console": {"class": "logging.StreamHandler", "formatter": "console"}
         },
         "loggers": {
-            "abusor": {
-                "level": values.Value("INFO", environ_name="LOG_LEVEL"),
-                "handlers": ["console"],
-            },
-            "django": {
-                "level": values.Value("INFO", environ_name="LOG_LEVEL"),
-                "handlers": ["console"],
-            },
+            "abusor": {"level": env("LOG_LEVEL", "INFO"), "handlers": ["console"]},
+            "django": {"level": env("LOG_LEVEL", "INFO"), "handlers": ["console"]},
         },
     }
     WSGI_APPLICATION = "abusor.wsgi.application"
-    _SQLITE_DB_PATH = os.path.join(BASE_DIR, "db.sqlite")
-    DATABASES = values.DatabaseURLValue(f"sqlite:///{_SQLITE_DB_PATH}")
+    default_database_path = os.path.join(BASE_DIR, "db.sqlite")
+    DATABASES = {
+        "default": env.dj_db_url("DATABASE_URL", f"sqlite:///{default_database_path}")
+    }
+    if "mysql" in DATABASES["default"]["ENGINE"]:
+        DATABASES["default"]["ATOMIC_REQUESTS"] = True
+
+        if "OPTIONS" not in DATABASES["default"]:
+            DATABASES["default"]["OPTIONS"] = {}
+
+        DATABASES["default"]["OPTIONS"][
+            "init_command"
+        ] = "SET sql_mode='STRICT_TRANS_TABLES'"
+
     AUTH_PASSWORD_VALIDATORS = [
         {
             "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"  # noqa: E501
@@ -91,52 +94,3 @@ class Base(Configuration):
     USE_TZ = True
     STATIC_URL = "/static/"
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
-
-    @classmethod
-    def post_setup(cls):
-        super().post_setup()
-        if "mysql" in cls.DATABASES["default"]["ENGINE"]:
-            cls.DATABASES["default"]["ATOMIC_REQUESTS"] = True
-
-            if "OPTIONS" not in cls.DATABASES["default"]:
-                cls.DATABASES["default"]["OPTIONS"] = {}
-
-            cls.DATABASES["default"]["OPTIONS"][
-                "init_command"
-            ] = "SET sql_mode='STRICT_TRANS_TABLES'"
-
-
-class Main(Base):
-    """Third Party and application settings."""
-
-    REST_FRAMEWORK = {
-        "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
-        "DEFAULT_AUTHENTICATION_CLASSES": [
-            "rest_framework.authentication.SessionAuthentication",
-            "rest_framework.authentication.BasicAuthentication",
-            "rest_framework.authentication.TokenAuthentication",
-        ],
-        "PAGE_SIZE": 10,
-        "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    }
-    SENTRY_DSN = values.Value(None, environ_prefix="")
-
-    @classmethod
-    def post_setup(cls):
-        super().post_setup()
-
-        sentry_sdk.init(
-            dsn=cls.SENTRY_DSN,
-            integrations=[DjangoIntegration()],
-            send_default_pii=True,
-            release=VERSION,
-        )
-
-    ABUSOR_SCORE_DECAY = values.FloatValue(0.9, environ_prefix="")
-
-
-class Test(Main):
-    """Specific settngs for test runs."""
-
-    SECRET_KEY = "secret"
-    DEBUG = True

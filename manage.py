@@ -3,17 +3,16 @@
 import os
 import sys
 
-from dotenv import find_dotenv, load_dotenv
+from environs import Env
+
+env = Env()
+env.read_env()
 
 
 def main():
-    load_dotenv(find_dotenv())
-
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "abusor.settings")
-    os.environ.setdefault("DJANGO_CONFIGURATION", "Main")
-
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "abusor.settings.main")
     try:
-        from configurations.management import execute_from_command_line
+        from django.core.management import execute_from_command_line
     except ImportError as exc:
         raise ImportError(
             "Couldn't import Django. Are you sure it's installed and "
