@@ -16,9 +16,9 @@ django-configurations[database]==2.2 \
     --hash=sha256:0b93cb7042739e2d69cfc6fb81676bbd3cbb63ea19b02e8b681f4cad3a8aaf1b \
     --hash=sha256:9e3bcea1355ac50a4c9f854f751d214cb17e5f8adf18405a4488d0a1e8945915 \
     # via abusor (setup.py)
-django==2.2.10 \
-    --hash=sha256:1226168be1b1c7efd0e66ee79b0e0b58b2caa7ed87717909cd8a57bb13a7079a \
-    --hash=sha256:9a4635813e2d498a3c01b10c701fe4a515d76dd290aaa792ccb65ca4ccb6b038 \
+django==2.2.21 \
+    --hash=sha256:7d8b61b6e7031a3c1a4aef29e2701849af0837f4f2062bc203077a0b46d51c2c \
+    --hash=sha256:7460cfe3781d36d1625230267dad255deb33e9229e41f21e32b33b9d536d20cd \
     # via abusor (setup.py), djangorestframework
 djangorestframework==3.11.0 \
     --hash=sha256:05809fc66e1c997fd9a32ea5730d9f4ba28b109b9da71fccfa5ff241201fd0a4 \
